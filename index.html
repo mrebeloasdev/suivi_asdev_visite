@@ -13,106 +13,32 @@
 <title>Suivi des déplacements & heures — ASDEV</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap');
-
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: 'Work Sans', sans-serif;
-    background: #EFEAE0;
-    color: #2A2620;
-  }
-  .header {
-    background: #26433A;
-    color: #F3EFE4;
-    padding: 28px 24px 40px;
-  }
+  body { margin: 0; font-family: 'Work Sans', sans-serif; background: #EFEAE0; color: #2A2620; }
+  .header { background: #26433A; color: #F3EFE4; padding: 28px 24px 40px; }
   .header-inner { max-width: 980px; margin: 0 auto; }
-  .eyebrow {
-    display: flex; align-items: center; gap: 8px;
-    opacity: 0.85; font-size: 13px; letter-spacing: 1.5px;
-    text-transform: uppercase; margin-bottom: 8px;
-  }
-  h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 700;
-    font-size: 34px;
-    margin: 0;
-    line-height: 1.15;
-  }
-  .subtitle {
-    max-width: 640px;
-    opacity: 0.85;
-    margin-top: 10px;
-    font-size: 15px;
-    line-height: 1.5;
-  }
-  .layout {
-    max-width: 980px;
-    margin: -24px auto 0;
-    padding: 0 24px 60px;
-    display: grid;
-    grid-template-columns: minmax(0,1fr) 300px;
-    gap: 20px;
-  }
-  @media (max-width: 760px) {
-    .layout { grid-template-columns: 1fr; }
-  }
-  .card {
-    background: #FBF9F4;
-    border-radius: 14px;
-    padding: 22px;
-    box-shadow: 0 8px 24px rgba(38,67,58,0.10);
-  }
-  .card h2 {
-    font-family: 'Fraunces', serif;
-    font-size: 19px;
-    margin: 0 0 16px;
-    display: flex; align-items: center; gap: 8px;
-  }
+  .eyebrow { display: flex; align-items: center; gap: 8px; opacity: 0.85; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 34px; margin: 0; line-height: 1.15; }
+  .subtitle { max-width: 640px; opacity: 0.85; margin-top: 10px; font-size: 15px; line-height: 1.5; }
+  .layout { max-width: 980px; margin: -24px auto 0; padding: 0 24px 60px; display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 20px; }
+  @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+  .card { background: #FBF9F4; border-radius: 14px; padding: 22px; box-shadow: 0 8px 24px rgba(38,67,58,0.10); }
+  .card h2 { font-family: 'Fraunces', serif; font-size: 19px; margin: 0 0 16px; display: flex; align-items: center; gap: 8px; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   @media (max-width: 480px) { .grid-2 { grid-template-columns: 1fr; } }
-  label.field {
-    display: flex; flex-direction: column; gap: 6px;
-    font-size: 13px; font-weight: 600; color: #5C5648;
-  }
-  input[type=text], input[type=date], input[type=number], input[type=time] {
-    font-family: 'Work Sans', sans-serif;
-    font-size: 14px;
-    padding: 9px 11px;
-    border-radius: 8px;
-    border: 1px solid #DAD3C2;
-    background: #FFFDFA;
-    color: #2A2620;
-    outline: none;
-    width: 100%;
-  }
+  label.field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #5C5648; }
+  input[type=text], input[type=date], input[type=number], input[type=time] { font-family: 'Work Sans', sans-serif; font-size: 14px; padding: 9px 11px; border-radius: 8px; border: 1px solid #DAD3C2; background: #FFFDFA; color: #2A2620; outline: none; width: 100%; }
   .checks { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 16px; align-items: center; }
-  .check-label {
-    font-size: 13px; display: flex; align-items: center; gap: 6px; color: #5C5648;
-  }
-  .detect {
-    font-size: 13px; display: flex; align-items: center; gap: 6px; color: #5C5648;
-  }
+  .check-label { font-size: 13px; display: flex; align-items: center; gap: 6px; color: #5C5648; }
+  .detect { font-size: 13px; display: flex; align-items: center; gap: 6px; color: #5C5648; }
   .mode-row { display: flex; gap: 10px; margin-top: 6px; }
-  .pill {
-    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 8px 10px; border-radius: 8px; border: 1px solid #DAD3C2;
-    background: #FFFDFA; color: #5C5648; font-size: 13px; font-weight: 600;
-    cursor: pointer;
-  }
+  .pill { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 8px; border: 1px solid #DAD3C2; background: #FFFDFA; color: #5C5648; font-size: 13px; font-weight: 600; cursor: pointer; }
   .pill.active { border: 1px solid #26433A; background: #26433A; color: #F3EFE4; }
   .error { margin-top: 14px; color: #B0432A; font-size: 13px; display: flex; align-items: center; gap: 6px; }
-  .btn-primary {
-    margin-top: 18px; width: 100%; background: #C1662F; color: #FBF9F4;
-    border: none; border-radius: 9px; padding: 11px 16px; font-size: 14px;
-    font-weight: 600; cursor: pointer; display: flex; align-items: center;
-    justify-content: center; gap: 8px;
-  }
+  .btn-primary { margin-top: 18px; width: 100%; background: #C1662F; color: #FBF9F4; border: none; border-radius: 9px; padding: 11px 16px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-primary:hover { background: #AD5726; }
   .empty { font-size: 14px; color: #8A8373; }
-  .trip {
-    display: flex; gap: 14px; padding: 14px 0; border-top: 1px solid #E6E0D2;
-  }
+  .trip { display: flex; gap: 14px; padding: 14px 0; border-top: 1px solid #E6E0D2; }
   .trip:first-child { border-top: none; }
   .dot-col { width: 14px; display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
   .dot { width: 9px; height: 9px; border-radius: 50%; background: #C9C2AF; }
@@ -120,21 +46,14 @@
   .trip-body { flex: 1; }
   .trip-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
   .trip-title { font-weight: 600; font-size: 14.5px; }
-  .del-btn {
-    background: none; border: none; color: #B0432A; cursor: pointer; padding: 4px;
-    display: flex; align-items: center; font-size: 16px;
-  }
+  .del-btn { background: none; border: none; color: #B0432A; cursor: pointer; padding: 4px; display: flex; align-items: center; font-size: 16px; }
   .trip-meta { font-size: 13px; color: #6B6455; margin-top: 2px; display: flex; gap: 12px; flex-wrap: wrap; }
   .trip-result { font-size: 13px; margin-top: 6px; color: #8A8373; }
   .trip-result.eligible { color: #26433A; }
   .trip-reason { font-size: 12px; color: #9C9585; margin-top: 3px; }
   .side { display: flex; flex-direction: column; gap: 16px; }
-  .summary-card {
-    background: #26433A; color: #F3EFE4; border-radius: 14px; padding: 20px;
-  }
-  .summary-card h3 {
-    font-family: 'Fraunces', serif; font-size: 16px; margin: 0 0 14px; opacity: 0.9;
-  }
+  .summary-card { background: #26433A; color: #F3EFE4; border-radius: 14px; padding: 20px; }
+  .summary-card h3 { font-family: 'Fraunces', serif; font-size: 16px; margin: 0 0 14px; opacity: 0.9; }
   .summary-block { margin-bottom: 14px; }
   .summary-label { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.5px; }
   .summary-value { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; }
@@ -142,21 +61,12 @@
   .rate-note { font-size: 12px; color: #9C9585; margin-top: 8px; line-height: 1.5; }
   .rules-card { font-size: 12.5px; color: #6B6455; line-height: 1.6; }
   .rules-card strong { color: #2A2620; }
-  .storage-note {
-    max-width: 980px; margin: 0 auto; padding: 0 24px 20px; font-size: 12px; color: #8A8373;
-  }
-  /* Tabs */
+  .storage-note { max-width: 980px; margin: 0 auto; padding: 0 24px 20px; font-size: 12px; color: #8A8373; }
   .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-  .tab {
-    flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
-    padding: 12px 14px; border-radius: 11px; border: 1px solid #DAD3C2;
-    background: #FBF9F4; color: #5C5648; font-size: 14px; font-weight: 600;
-    cursor: pointer; box-shadow: 0 4px 12px rgba(38,67,58,0.06);
-  }
+  .tab { flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 12px 14px; border-radius: 11px; border: 1px solid #DAD3C2; background: #FBF9F4; color: #5C5648; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(38,67,58,0.06); }
   .tab.active { border: 1px solid #26433A; background: #26433A; color: #F3EFE4; }
   .module { display: none; }
   .module.active { display: block; }
-  /* Weekly overtime grouping */
   .week-group { padding: 14px 0; border-top: 1px solid #E6E0D2; }
   .week-group:first-child { border-top: none; }
   .week-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
@@ -188,53 +98,27 @@
       <button type="button" class="tab" id="tab-hs">🕒 Heures de travail</button>
     </div>
 
-    <!-- ===================== MODULE TRAJETS ===================== -->
     <div class="module active" id="module-trajets">
-
       <div class="card" style="margin-bottom:20px;">
         <h2>➕ Ajouter un trajet</h2>
-
         <div class="grid-2">
-          <label class="field">
-            <span id="lbl-date">Date du trajet</span>
-            <input type="date" id="f-date" />
-          </label>
-          <label class="field">
-            Repère (facultatif)
-            <input type="text" id="f-label" placeholder="ex. Visite Verfeil" />
-          </label>
-          <label class="field">
-            <span id="lbl-duration">Durée totale A/R (heures)</span>
-            <input type="number" id="f-duration" step="0.25" min="0" placeholder="ex. 5.5" />
-          </label>
-          <label class="field">
-            <span id="lbl-distance">Distance A/R (km)</span>
-            <input type="number" id="f-distance" step="1" min="0" placeholder="ex. 320" />
-          </label>
+          <label class="field"><span id="lbl-date">Date du trajet</span><input type="date" id="f-date" /></label>
+          <label class="field">Repère (facultatif)<input type="text" id="f-label" placeholder="ex. Visite Verfeil" /></label>
+          <label class="field"><span id="lbl-duration">Durée totale A/R (heures)</span><input type="number" id="f-duration" step="0.25" min="0" placeholder="ex. 5.5" /></label>
+          <label class="field"><span id="lbl-distance">Distance A/R (km)</span><input type="number" id="f-distance" step="1" min="0" placeholder="ex. 320" /></label>
         </div>
-
         <div class="checks">
           <div class="detect" id="f-detect">📅 Sélectionne une date</div>
           <label class="check-label"><input type="checkbox" id="f-holiday" /> Jour férié</label>
           <label class="check-label"><input type="checkbox" id="f-contract" /> Trajet pendant les horaires contractuels</label>
           <label class="check-label"><input type="checkbox" id="f-multiday" /> 🔁 Aller / retour sur des jours différents</label>
         </div>
-
         <div id="retour-block" style="display:none; margin-top:16px; padding-top:16px; border-top:1px dashed #DAD3C2;">
           <span style="font-size:13px; font-weight:700; color:#26433A; display:block; margin-bottom:10px;">🔁 Retour (jour différent)</span>
           <div class="grid-2">
-            <label class="field">
-              Date du retour
-              <input type="date" id="r-date" />
-            </label>
-            <label class="field">
-              Durée retour (heures)
-              <input type="number" id="r-duration" step="0.25" min="0" placeholder="ex. 4" />
-            </label>
-            <label class="field">
-              Distance retour (km)
-              <input type="number" id="r-distance" step="1" min="0" placeholder="ex. 320" />
-            </label>
+            <label class="field">Date du retour<input type="date" id="r-date" /></label>
+            <label class="field">Durée retour (heures)<input type="number" id="r-duration" step="0.25" min="0" placeholder="ex. 4" /></label>
+            <label class="field">Distance retour (km)<input type="number" id="r-distance" step="1" min="0" placeholder="ex. 320" /></label>
           </div>
           <div class="checks">
             <div class="detect" id="r-detect">📅 Sélectionne une date</div>
@@ -242,7 +126,6 @@
             <label class="check-label"><input type="checkbox" id="r-contract" /> Retour pendant les horaires contractuels</label>
           </div>
         </div>
-
         <div style="margin-top:16px;">
           <span style="font-size:13px; font-weight:600; color:#5C5648; display:block; margin-bottom:6px;">Compensation souhaitée</span>
           <div class="mode-row">
@@ -250,69 +133,39 @@
             <button type="button" class="pill" id="mode-prime">💶 Prime équivalente</button>
           </div>
         </div>
-
         <div class="error" id="f-error" style="display:none;"></div>
-
         <button class="btn-primary" id="btn-add">➕ Ajouter ce trajet</button>
       </div>
-
       <div class="card">
         <h2>🛣 Journal de route</h2>
         <div id="trip-list"></div>
       </div>
-
     </div>
 
-    <!-- ===================== MODULE HEURES DE TRAVAIL ===================== -->
     <div class="module" id="module-hs">
-
       <div class="card" style="margin-bottom:20px;">
         <h2>➕ Ajouter une journée de travail</h2>
-        <p style="font-size:13px; color:#6B6455; margin:0 0 16px; line-height:1.5;">
-          Note tes heures réelles sur la visite. L'outil calcule le <strong>travail effectif</strong> (fin − début − pause) et en déduit tes <strong>heures supplémentaires</strong> au-delà de ta base journalière, cumulées par semaine pour poser tes jours de récupération.
-        </p>
-
+        <p style="font-size:13px; color:#6B6455; margin:0 0 16px; line-height:1.5;">Note tes heures réelles sur la visite. L'outil calcule le <strong>travail effectif</strong> (fin − début − pause) et en déduit tes <strong>heures supplémentaires</strong> au-delà de ta base journalière, cumulées par semaine pour poser tes jours de récupération.</p>
         <div class="grid-2">
-          <label class="field">
-            Date
-            <input type="date" id="h-date" />
-          </label>
-          <label class="field">
-            Repère / site (facultatif)
-            <input type="text" id="h-label" placeholder="ex. Chantier Lauragais" />
-          </label>
-          <label class="field">
-            Heure de début
-            <input type="time" id="h-start" />
-          </label>
-          <label class="field">
-            Heure de fin
-            <input type="time" id="h-end" />
-          </label>
-          <label class="field">
-            Pause (minutes)
-            <input type="number" id="h-pause" step="5" min="0" placeholder="ex. 30" />
-          </label>
+          <label class="field">Date<input type="date" id="h-date" /></label>
+          <label class="field">Repère / site (facultatif)<input type="text" id="h-label" placeholder="ex. Chantier Lauragais" /></label>
+          <label class="field">Heure de début<input type="time" id="h-start" /></label>
+          <label class="field">Heure de fin<input type="time" id="h-end" /></label>
+          <label class="field">Pause (minutes)<input type="number" id="h-pause" step="5" min="0" placeholder="ex. 30" /></label>
         </div>
-
         <div class="detect" id="h-detect" style="margin-top:14px;">📅 Sélectionne une date</div>
-
         <div class="error" id="h-error" style="display:none;"></div>
-
         <button class="btn-primary" id="btn-add-hs">➕ Ajouter cette journée</button>
       </div>
-
       <div class="card">
         <h2>⏳ Heures supp. par semaine</h2>
         <div id="hs-list"></div>
       </div>
-
     </div>
 
   </div>
 
   <div class="side">
-    <!-- Résumé Trajets -->
     <div class="card summary-card" id="side-trajets">
       <h3>Compensation trajets</h3>
       <div class="summary-block">
@@ -325,16 +178,10 @@
         <div class="summary-eur" id="sum-eur" style="display:none;"></div>
       </div>
     </div>
-
     <div class="card" id="side-rate">
-      <label class="field" style="margin-bottom:8px;">
-        Taux horaire brut (€, facultatif)
-        <input type="number" id="f-rate" step="0.01" min="0" placeholder="ex. 18.50" />
-      </label>
+      <label class="field" style="margin-bottom:8px;">Taux horaire brut (€, facultatif)<input type="number" id="f-rate" step="0.01" min="0" placeholder="ex. 18.50" /></label>
       <p class="rate-note">Utilisé uniquement pour estimer le montant de la prime équivalente. Cette estimation reste indicative — la validation revient à ton responsable hiérarchique.</p>
     </div>
-
-    <!-- Résumé Heures de travail -->
     <div class="card summary-card" id="side-hs" style="display:none;">
       <h3>Heures supp. terrain</h3>
       <div class="summary-block">
@@ -347,60 +194,37 @@
         <div class="summary-eur" id="sum-hs-days-note"></div>
       </div>
     </div>
-
     <div class="card" id="side-daylen" style="display:none;">
-      <label class="field" style="margin-bottom:8px;">
-        Base journalière (h)
-        <input type="number" id="f-daylen" step="0.5" min="1" placeholder="ex. 7" />
-      </label>
+      <label class="field" style="margin-bottom:8px;">Base journalière (h)<input type="number" id="f-daylen" step="0.5" min="1" placeholder="ex. 7" /></label>
       <p class="rate-note">Ta durée de travail effectif « normale » par jour. Sert de seuil pour les heures supplémentaires <em>et</em> de base pour convertir les heures cumulées en jours de récupération. Par défaut : 7 h (35 h/sem).</p>
     </div>
-
     <div class="card rules-card" id="rules-trajets">
       <strong>Rappel de la règle — trajets</strong>
-      <p style="margin:8px 0 0;">
-        Seuil : trajet A/R &gt; 2h ou &gt; 100 km.<br />
-        Compensation = (X − 2) × 50 %.<br />
-        Jour non travaillé : franchise supprimée, compensation dès la 1ère heure.<br />
-        Trajet pendant les horaires contractuels : déjà comptabilisé comme temps de travail, pas de compensation en plus.<br />
-        <strong>Aller / retour des jours différents :</strong> calcul « par jour » — chaque jour applique sa propre franchise selon son type, puis les heures s'additionnent.
-      </p>
+      <p style="margin:8px 0 0;">Seuil : trajet A/R &gt; 2h ou &gt; 100 km.<br />Compensation = (X − 2) × 50 %.<br />Jour non travaillé : franchise supprimée, compensation dès la 1ère heure.<br />Trajet pendant les horaires contractuels : déjà comptabilisé comme temps de travail, pas de compensation en plus.<br /><strong>Aller / retour des jours différents :</strong> calcul « par jour » — chaque jour applique sa propre franchise selon son type, puis les heures s'additionnent.</p>
     </div>
-
     <div class="card rules-card" id="rules-hs" style="display:none;">
       <strong>Rappel — heures de travail</strong>
-      <p style="margin:8px 0 0;">
-        Travail effectif du jour = heure de fin − heure de début − pause.<br />
-        Heures supp. du jour = travail effectif − base journalière (si positif).<br />
-        Elles sont cumulées par semaine (du lundi au dimanche) pour planifier tes jours de récupération.<br />
-        Chiffres indicatifs : la pose des jours de récup reste soumise à validation de ton responsable.
-      </p>
+      <p style="margin:8px 0 0;">Travail effectif du jour = heure de fin − heure de début − pause.<br />Heures supp. du jour = travail effectif − base journalière (si positif).<br />Elles sont cumulées par semaine (du lundi au dimanche) pour planifier tes jours de récupération.<br />Chiffres indicatifs : la pose des jours de récup reste soumise à validation de ton responsable.</p>
     </div>
   </div>
 </div>
 
-<div class="storage-note">
-  Les données sont enregistrées uniquement dans ce navigateur (stockage local), sur cet ordinateur. Rien n'est envoyé en ligne.
-</div>
+<div class="storage-note">Les données sont enregistrées uniquement dans ce navigateur (stockage local), sur cet appareil. Rien n'est envoyé en ligne.</div>
 
 <script>
-  const STORAGE_KEY = "asdev-trajets-v2";
-  let trips = [];
-  let overtime = [];
-  let hourlyRate = "";
-  let dayLength = "7";
-  let mode = "repos";
-  let activeTab = "trajets";
+  var STORAGE_KEY = "asdev-trajets-v2";
+  var trips = [];
+  var overtime = [];
+  var hourlyRate = "";
+  var dayLength = "7";
+  var mode = "repos";
 
   function loadData() {
     try {
-      let raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        const oldRaw = localStorage.getItem("asdev-trajets-v1");
-        if (oldRaw) raw = oldRaw;
-      }
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) { var oldRaw = localStorage.getItem("asdev-trajets-v1"); if (oldRaw) raw = oldRaw; }
       if (raw) {
-        const parsed = JSON.parse(raw);
+        var parsed = JSON.parse(raw);
         trips = parsed.trips || [];
         overtime = parsed.overtime || [];
         hourlyRate = parsed.hourlyRate || "";
@@ -410,38 +234,28 @@
   }
 
   function saveData() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ trips, overtime, hourlyRate, dayLength }));
-    } catch (e) { console.error("Erreur de sauvegarde", e); }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ trips: trips, overtime: overtime, hourlyRate: hourlyRate, dayLength: dayLength })); }
+    catch (e) { console.error("Erreur de sauvegarde", e); }
   }
 
-  function uid() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 
   function isWeekendDate(dateStr) {
     if (!dateStr) return false;
-    const d = new Date(dateStr + "T00:00:00");
-    const day = d.getDay();
+    var d = new Date(dateStr + "T00:00:00");
+    var day = d.getDay();
     return day === 0 || day === 6;
   }
 
-  /* ================= TRAJETS ================= */
   function computeCompensation(trip) {
-    const X = parseFloat(trip.duration) || 0;
-    const distance = parseFloat(trip.distance) || 0;
-    const isOffDay = trip.weekend || trip.holiday;
-    const duringContract = trip.duringContractHours;
-
+    var X = parseFloat(trip.duration) || 0;
+    var distance = parseFloat(trip.distance) || 0;
+    var isOffDay = trip.weekend || trip.holiday;
+    var duringContract = trip.duringContractHours;
     if (duringContract && !isOffDay) {
-      return {
-        eligible: false,
-        roundedHours: 0,
-        reason: "Trajet effectué pendant les horaires contractuels : comptabilisé comme temps de travail, sans compensation supplémentaire (art. 8)."
-      };
+      return { eligible: false, roundedHours: 0, reason: "Trajet effectué pendant les horaires contractuels : comptabilisé comme temps de travail, sans compensation supplémentaire (art. 8)." };
     }
-
-    let compHours = 0, reason = "";
+    var compHours = 0, reason = "";
     if (isOffDay) {
       compHours = X * 0.5;
       reason = "Jour non travaillé : franchise de 2h supprimée, compensation dès la 1ère heure (cas particulier, art. 4).";
@@ -454,176 +268,123 @@
         reason = "Sous le seuil de déclenchement (2h et 100 km) : pas de compensation.";
       }
     }
-    const roundedHours = Math.round(compHours * 2) / 2;
-    return { eligible: roundedHours > 0, roundedHours, reason };
+    var roundedHours = Math.round(compHours * 2) / 2;
+    return { eligible: roundedHours > 0, roundedHours: roundedHours, reason: reason };
   }
 
   function formatDate(dateStr) {
-    const d = new Date(dateStr + "T00:00:00");
+    var d = new Date(dateStr + "T00:00:00");
     return d.toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
   }
 
-  // Calcule un trajet, qu'il soit sur un seul jour ou en aller/retour multi-jours.
-  // Règle "par jour" (note art. 4) : chaque jour a sa propre franchise selon son type.
   function computeTrip(t) {
     if (t.multiDay && Array.isArray(t.legs)) {
-      const legs = t.legs.map(l => ({ ...l, calc: computeCompensation(l) }));
-      const totalHours = legs.reduce((s, l) => s + l.calc.roundedHours, 0);
-      return { multiDay: true, legs, totalHours, eligible: totalHours > 0 };
+      var legs = t.legs.map(function (l) { var c = Object.assign({}, l); c.calc = computeCompensation(l); return c; });
+      var totalHours = legs.reduce(function (s, l) { return s + l.calc.roundedHours; }, 0);
+      return { multiDay: true, legs: legs, totalHours: totalHours, eligible: totalHours > 0 };
     }
-    const calc = computeCompensation(t);
-    return { multiDay: false, calc, totalHours: calc.roundedHours, eligible: calc.eligible };
+    var calc = computeCompensation(t);
+    return { multiDay: false, calc: calc, totalHours: calc.roundedHours, eligible: calc.eligible };
   }
 
-  function tripSortDate(t) {
-    return (t.multiDay && t.legs && t.legs.length) ? t.legs[0].date : t.date;
-  }
+  function tripSortDate(t) { return (t.multiDay && t.legs && t.legs.length) ? t.legs[0].date : t.date; }
 
-  /* ================= SEMAINES ISO ================= */
   function isoWeekInfo(dateStr) {
-    const d = new Date(dateStr + "T00:00:00");
-    const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    const dayNum = (target.getUTCDay() + 6) % 7;
-    const monday = new Date(target);
-    monday.setUTCDate(target.getUTCDate() - dayNum);
-    const sunday = new Date(monday);
-    sunday.setUTCDate(monday.getUTCDate() + 6);
-    const thursday = new Date(target);
-    thursday.setUTCDate(target.getUTCDate() - dayNum + 3);
-    const firstThursday = new Date(Date.UTC(thursday.getUTCFullYear(), 0, 4));
-    const firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
+    var d = new Date(dateStr + "T00:00:00");
+    var target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var dayNum = (target.getUTCDay() + 6) % 7;
+    var monday = new Date(target); monday.setUTCDate(target.getUTCDate() - dayNum);
+    var sunday = new Date(monday); sunday.setUTCDate(monday.getUTCDate() + 6);
+    var thursday = new Date(target); thursday.setUTCDate(target.getUTCDate() - dayNum + 3);
+    var firstThursday = new Date(Date.UTC(thursday.getUTCFullYear(), 0, 4));
+    var firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
     firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
-    const week = 1 + Math.round((thursday - firstThursday) / (7 * 24 * 3600 * 1000));
-    const year = thursday.getUTCFullYear();
-    return { key: year + "-W" + String(week).padStart(2, "0"), week, year, monday, sunday };
+    var week = 1 + Math.round((thursday - firstThursday) / (7 * 24 * 3600 * 1000));
+    var year = thursday.getUTCFullYear();
+    return { key: year + "-W" + String(week).padStart(2, "0"), week: week, year: year, monday: monday, sunday: sunday };
   }
 
-  function fmtShort(d) {
-    return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
-  }
+  function fmtShort(d) { return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }); }
+  function fmtHours(h) { return (Math.round(h * 100) / 100).toString().replace(".", ",") + " h"; }
+  function fmtTime(t) { return t ? t.replace(":", "h") : ""; }
 
-  function fmtHours(h) {
-    return (Math.round(h * 100) / 100).toString().replace(".", ",") + " h";
-  }
-
-  function fmtTime(t) {
-    return t ? t.replace(":", "h") : "";
-  }
-
-  /* ================= HEURES DE TRAVAIL ================= */
-  // Travail effectif d'une journée à partir de début / fin / pause (minutes).
   function dayWorkedHours(o) {
     if (o.start && o.end) {
-      const [sh, sm] = o.start.split(":").map(Number);
-      const [eh, em] = o.end.split(":").map(Number);
-      let mins = (eh * 60 + em) - (sh * 60 + sm);
-      if (mins < 0) mins += 24 * 60; // sécurité passage minuit
-      const pause = parseFloat(o.pause) || 0; // minutes
+      var sp = o.start.split(":"), ep = o.end.split(":");
+      var mins = (Number(ep[0]) * 60 + Number(ep[1])) - (Number(sp[0]) * 60 + Number(sp[1]));
+      if (mins < 0) mins += 24 * 60;
+      var pause = parseFloat(o.pause) || 0;
       return Math.max(0, (mins - pause) / 60);
     }
-    return null; // ancien format sans horaires détaillés
+    return null;
   }
 
-  // Heures supplémentaires du jour = travail effectif - base journalière.
   function dayOvertime(o, base) {
-    const worked = dayWorkedHours(o);
-    if (worked === null) return Math.max(0, parseFloat(o.hours) || 0); // rétrocompat
+    var worked = dayWorkedHours(o);
+    if (worked === null) return Math.max(0, parseFloat(o.hours) || 0);
     return Math.max(0, worked - base);
   }
 
-  /* ================= RENDER TRAJETS ================= */
   function legLine(l, prefix) {
-    const parts = [];
-    parts.push(`${l.duration} h`);
-    if (l.distance) parts.push(`📍 ${l.distance} km`);
-    if (l.weekend || l.holiday) parts.push(`☀️ jour non travaillé`);
-    if (l.duringContractHours) parts.push(`horaires contractuels`);
-    const res = l.calc.roundedHours > 0 ? `→ + ${l.calc.roundedHours} h` : `→ pas de compensation`;
-    return `<div class="trip-reason" style="margin-top:5px;"><strong style="color:#5C5648;">${prefix} ${formatDate(l.date)}</strong> · ${parts.join(" · ")} <span style="color:#26433A;">${res}</span></div>`;
+    var parts = [];
+    parts.push(l.duration + " h");
+    if (l.distance) parts.push("📍 " + l.distance + " km");
+    if (l.weekend || l.holiday) parts.push("☀️ jour non travaillé");
+    if (l.duringContractHours) parts.push("horaires contractuels");
+    var res = l.calc.roundedHours > 0 ? "→ + " + l.calc.roundedHours + " h" : "→ pas de compensation";
+    return '<div class="trip-reason" style="margin-top:5px;"><strong style="color:#5C5648;">' + prefix + ' ' + formatDate(l.date) + '</strong> · ' + parts.join(" · ") + ' <span style="color:#26433A;">' + res + '</span></div>';
   }
 
   function renderTrips() {
-    const list = document.getElementById("trip-list");
-    const enriched = trips.map(t => ({ ...t, comp: computeTrip(t) }))
-                           .sort((a,b) => tripSortDate(a).localeCompare(tripSortDate(b)));
-
+    var list = document.getElementById("trip-list");
+    var enriched = trips.map(function (t) { var c = Object.assign({}, t); c.comp = computeTrip(t); return c; })
+                        .sort(function (a, b) { return tripSortDate(a).localeCompare(tripSortDate(b)); });
     if (enriched.length === 0) {
       list.innerHTML = '<p class="empty">Aucun trajet enregistré pour le moment. Ajoute ta première mission ci-dessus.</p>';
     } else {
-      list.innerHTML = enriched.map(t => {
-        const eligible = t.comp.eligible;
-        let resultHtml;
+      list.innerHTML = enriched.map(function (t) {
+        var eligible = t.comp.eligible;
+        var resultHtml;
         if (eligible) {
-          let extra = "";
-          if (t.mode === "prime" && parseFloat(hourlyRate) > 0) {
-            extra = ` (${(t.comp.totalHours * parseFloat(hourlyRate)).toFixed(2)} €)`;
-          }
-          resultHtml = `<strong>+ ${t.comp.totalHours} h ${t.mode === "repos" ? "de repos compensateur" : "au taux horaire"}${extra}</strong>`;
-        } else {
-          resultHtml = "Pas de compensation";
-        }
-
-        let titleDate, metaHtml, reasonHtml;
+          var extra = "";
+          if (t.mode === "prime" && parseFloat(hourlyRate) > 0) { extra = " (" + (t.comp.totalHours * parseFloat(hourlyRate)).toFixed(2) + " €)"; }
+          resultHtml = "<strong>+ " + t.comp.totalHours + " h " + (t.mode === "repos" ? "de repos compensateur" : "au taux horaire") + extra + "</strong>";
+        } else { resultHtml = "Pas de compensation"; }
+        var titleDate, metaHtml, reasonHtml;
         if (t.comp.multiDay) {
-          const l0 = t.comp.legs[0], l1 = t.comp.legs[1];
-          titleDate = `${formatDate(l0.date)} → ${l1 ? formatDate(l1.date) : ""}`;
-          metaHtml = `🔁 Déplacement sur plusieurs jours · calcul par jour (art. 4)`;
-          reasonHtml = t.comp.legs.map((l, i) => legLine(l, i === 0 ? "Aller —" : "Retour —")).join("");
+          var l0 = t.comp.legs[0], l1 = t.comp.legs[1];
+          titleDate = formatDate(l0.date) + " → " + (l1 ? formatDate(l1.date) : "");
+          metaHtml = "🔁 Déplacement sur plusieurs jours · calcul par jour (art. 4)";
+          reasonHtml = t.comp.legs.map(function (l, i) { return legLine(l, i === 0 ? "Aller —" : "Retour —"); }).join("");
         } else {
           titleDate = formatDate(t.date);
-          const metaBits = [];
-          metaBits.push(`${t.duration} h A/R`);
-          if (t.distance) metaBits.push(`📍 ${t.distance} km`);
-          if (t.weekend || t.holiday) metaBits.push(`☀️ jour non travaillé`);
-          if (t.duringContractHours) metaBits.push(`horaires contractuels`);
+          var metaBits = [];
+          metaBits.push(t.duration + " h A/R");
+          if (t.distance) metaBits.push("📍 " + t.distance + " km");
+          if (t.weekend || t.holiday) metaBits.push("☀️ jour non travaillé");
+          if (t.duringContractHours) metaBits.push("horaires contractuels");
           metaHtml = metaBits.join(" · ");
-          reasonHtml = `<div class="trip-reason">${t.comp.calc.reason}</div>`;
+          reasonHtml = '<div class="trip-reason">' + t.comp.calc.reason + '</div>';
         }
-
-        return `
-          <div class="trip">
-            <div class="dot-col"><div class="dot ${eligible ? "eligible" : ""}"></div></div>
-            <div class="trip-body">
-              <div class="trip-top">
-                <span class="trip-title">${titleDate}${t.label ? " — " + escapeHtml(t.label) : ""}</span>
-                <button class="del-btn" data-id="${t.id}" title="Supprimer">🗑</button>
-              </div>
-              <div class="trip-meta">${metaHtml}</div>
-              <div class="trip-result ${eligible ? "eligible" : ""}">${resultHtml}</div>
-              ${reasonHtml}
-            </div>
-          </div>
-        `;
+        return '<div class="trip"><div class="dot-col"><div class="dot ' + (eligible ? "eligible" : "") + '"></div></div><div class="trip-body"><div class="trip-top"><span class="trip-title">' + titleDate + (t.label ? " — " + escapeHtml(t.label) : "") + '</span><button class="del-btn" data-id="' + t.id + '" title="Supprimer">🗑</button></div><div class="trip-meta">' + metaHtml + '</div><div class="trip-result ' + (eligible ? "eligible" : "") + '">' + resultHtml + '</div>' + reasonHtml + '</div></div>';
       }).join("");
-
-      list.querySelectorAll(".del-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          trips = trips.filter(t => t.id !== btn.dataset.id);
-          saveData();
-          renderTrips();
-        });
+      list.querySelectorAll(".del-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () { trips = trips.filter(function (t) { return t.id !== btn.dataset.id; }); saveData(); renderTrips(); });
       });
     }
-
-    const totalRepos = enriched.filter(t => t.mode === "repos").reduce((s,t) => s + t.comp.totalHours, 0);
-    const totalPrimeHours = enriched.filter(t => t.mode === "prime").reduce((s,t) => s + t.comp.totalHours, 0);
+    var totalRepos = enriched.filter(function (t) { return t.mode === "repos"; }).reduce(function (s, t) { return s + t.comp.totalHours; }, 0);
+    var totalPrimeHours = enriched.filter(function (t) { return t.mode === "prime"; }).reduce(function (s, t) { return s + t.comp.totalHours; }, 0);
     document.getElementById("sum-repos").textContent = totalRepos + " h";
     document.getElementById("sum-prime").textContent = totalPrimeHours + " h";
-    const rate = parseFloat(hourlyRate) || 0;
-    const eurEl = document.getElementById("sum-eur");
-    if (rate > 0) {
-      eurEl.style.display = "block";
-      eurEl.textContent = "≈ " + (totalPrimeHours * rate).toFixed(2) + " €";
-    } else {
-      eurEl.style.display = "none";
-    }
+    var rate = parseFloat(hourlyRate) || 0;
+    var eurEl = document.getElementById("sum-eur");
+    if (rate > 0) { eurEl.style.display = "block"; eurEl.textContent = "≈ " + (totalPrimeHours * rate).toFixed(2) + " €"; }
+    else { eurEl.style.display = "none"; }
   }
 
-  /* ================= RENDER HEURES DE TRAVAIL ================= */
   function renderOvertime() {
-    const list = document.getElementById("hs-list");
-    const base = parseFloat(dayLength) > 0 ? parseFloat(dayLength) : 7;
-
+    var list = document.getElementById("hs-list");
+    var base = parseFloat(dayLength) > 0 ? parseFloat(dayLength) : 7;
     if (overtime.length === 0) {
       list.innerHTML = '<p class="empty">Aucune journée enregistrée. Ajoute ta première journée de travail ci-dessus.</p>';
       document.getElementById("sum-hs").textContent = "0 h";
@@ -631,128 +392,69 @@
       document.getElementById("sum-hs-days-note").textContent = "";
       return;
     }
-
-    const groups = {};
-    overtime.forEach(o => {
-      const info = isoWeekInfo(o.date);
-      if (!groups[info.key]) groups[info.key] = { info, entries: [], total: 0 };
-      const hs = dayOvertime(o, base);
-      groups[info.key].entries.push({ ...o, hs });
+    var groups = {};
+    overtime.forEach(function (o) {
+      var info = isoWeekInfo(o.date);
+      if (!groups[info.key]) groups[info.key] = { info: info, entries: [], total: 0 };
+      var hs = dayOvertime(o, base);
+      var e = Object.assign({}, o); e.hs = hs;
+      groups[info.key].entries.push(e);
       groups[info.key].total += hs;
     });
-
-    const orderedKeys = Object.keys(groups).sort().reverse();
-
-    list.innerHTML = orderedKeys.map(key => {
-      const g = groups[key];
-      g.entries.sort((a,b) => a.date.localeCompare(b.date));
-      const days = g.total / base;
-      const daysRounded = Math.round(days * 2) / 2;
-      const rows = g.entries.map(o => {
-        const worked = dayWorkedHours(o);
-        let sub = "";
+    var orderedKeys = Object.keys(groups).sort().reverse();
+    list.innerHTML = orderedKeys.map(function (key) {
+      var g = groups[key];
+      g.entries.sort(function (a, b) { return a.date.localeCompare(b.date); });
+      var days = g.total / base;
+      var daysRounded = Math.round(days * 2) / 2;
+      var rows = g.entries.map(function (o) {
+        var worked = dayWorkedHours(o);
+        var sub;
         if (worked !== null) {
-          const pause = parseFloat(o.pause) || 0;
-          sub = `${fmtTime(o.start)}–${fmtTime(o.end)}${pause ? " (−" + pause + " min)" : ""} → ${fmtHours(worked)} travaillées`;
-        } else {
-          sub = "heures supp. saisies directement";
-        }
-        return `
-          <div class="ot-row">
-            <div>
-              <div class="ot-info">
-                ${formatDate(o.date)}${o.label ? " — " + escapeHtml(o.label) : ""}
-                <button class="del-btn" data-id="${o.id}" title="Supprimer" style="font-size:14px;">🗑</button>
-              </div>
-              <div class="ot-sub">${sub}</div>
-            </div>
-            <div class="ot-hours ${o.hs > 0 ? "" : "zero"}">${o.hs > 0 ? "+ " + fmtHours(o.hs) : "0 h supp"}</div>
-          </div>
-        `;
+          var pause = parseFloat(o.pause) || 0;
+          sub = fmtTime(o.start) + "–" + fmtTime(o.end) + (pause ? " (−" + pause + " min)" : "") + " → " + fmtHours(worked) + " travaillées";
+        } else { sub = "heures supp. saisies directement"; }
+        return '<div class="ot-row"><div><div class="ot-info">' + formatDate(o.date) + (o.label ? " — " + escapeHtml(o.label) : "") + ' <button class="del-btn" data-id="' + o.id + '" title="Supprimer" style="font-size:14px;">🗑</button></div><div class="ot-sub">' + sub + '</div></div><div class="ot-hours ' + (o.hs > 0 ? "" : "zero") + '">' + (o.hs > 0 ? "+ " + fmtHours(o.hs) : "0 h supp") + '</div></div>';
       }).join("");
-
-      return `
-        <div class="week-group">
-          <div class="week-head">
-            <div>
-              <div class="week-title">Semaine ${g.info.week} · ${g.info.year}</div>
-              <div class="trip-meta">${fmtShort(g.info.monday)} → ${fmtShort(g.info.sunday)}</div>
-            </div>
-            <div style="text-align:right;">
-              <div class="week-total">${fmtHours(g.total)} supp</div>
-              <div class="week-days">≈ ${daysRounded.toString().replace(".", ",")} j de récup</div>
-            </div>
-          </div>
-          ${rows}
-        </div>
-      `;
+      return '<div class="week-group"><div class="week-head"><div><div class="week-title">Semaine ' + g.info.week + ' · ' + g.info.year + '</div><div class="trip-meta">' + fmtShort(g.info.monday) + ' → ' + fmtShort(g.info.sunday) + '</div></div><div style="text-align:right;"><div class="week-total">' + fmtHours(g.total) + ' supp</div><div class="week-days">≈ ' + daysRounded.toString().replace(".", ",") + ' j de récup</div></div></div>' + rows + '</div>';
     }).join("");
-
-    list.querySelectorAll(".del-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        overtime = overtime.filter(o => o.id !== btn.dataset.id);
-        saveData();
-        renderOvertime();
-      });
+    list.querySelectorAll(".del-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () { overtime = overtime.filter(function (o) { return o.id !== btn.dataset.id; }); saveData(); renderOvertime(); });
     });
-
-    const total = overtime.reduce((s,o) => s + dayOvertime(o, base), 0);
-    const totalDays = total / base;
-    const totalDaysRounded = Math.round(totalDays * 2) / 2;
+    var total = overtime.reduce(function (s, o) { return s + dayOvertime(o, base); }, 0);
+    var totalDays = total / base;
+    var totalDaysRounded = Math.round(totalDays * 2) / 2;
     document.getElementById("sum-hs").textContent = fmtHours(total);
     document.getElementById("sum-hs-days").textContent = totalDaysRounded.toString().replace(".", ",") + " j";
     document.getElementById("sum-hs-days-note").textContent = "base " + base.toString().replace(".", ",") + " h/jour · valeur exacte " + (Math.round(totalDays * 100) / 100).toString().replace(".", ",") + " j";
   }
 
-  function render() {
-    renderTrips();
-    renderOvertime();
-  }
+  function render() { renderTrips(); renderOvertime(); }
 
-  function escapeHtml(str) {
-    const div = document.createElement("div");
-    div.textContent = str;
-    return div.innerHTML;
-  }
+  function escapeHtml(str) { var div = document.createElement("div"); div.textContent = str; return div.innerHTML; }
 
-  /* ================= DÉTECTION DATE ================= */
   function updateDetect() {
-    const dateVal = document.getElementById("f-date").value;
-    const el = document.getElementById("f-detect");
+    var dateVal = document.getElementById("f-date").value;
+    var el = document.getElementById("f-detect");
     if (!dateVal) { el.textContent = "📅 Sélectionne une date"; return; }
     el.textContent = isWeekendDate(dateVal) ? "📅 Samedi ou dimanche (détecté)" : "📅 Jour de semaine (détecté)";
   }
   function updateDetectHS() {
-    const dateVal = document.getElementById("h-date").value;
-    const el = document.getElementById("h-detect");
+    var dateVal = document.getElementById("h-date").value;
+    var el = document.getElementById("h-detect");
     if (!dateVal) { el.textContent = "📅 Sélectionne une date"; return; }
-    const info = isoWeekInfo(dateVal);
+    var info = isoWeekInfo(dateVal);
     el.textContent = "📅 Semaine " + info.week + " (" + fmtShort(info.monday) + " → " + fmtShort(info.sunday) + ")";
   }
   function updateDetectR() {
-    const dateVal = document.getElementById("r-date").value;
-    const el = document.getElementById("r-detect");
+    var dateVal = document.getElementById("r-date").value;
+    var el = document.getElementById("r-detect");
     if (!dateVal) { el.textContent = "📅 Sélectionne une date"; return; }
     el.textContent = isWeekendDate(dateVal) ? "📅 Samedi ou dimanche (détecté)" : "📅 Jour de semaine (détecté)";
   }
 
-  document.getElementById("f-date").addEventListener("change", updateDetect);
-  document.getElementById("h-date").addEventListener("change", updateDetectHS);
-  document.getElementById("r-date").addEventListener("change", updateDetectR);
-
-  // Bascule aller/retour sur des jours différents
-  document.getElementById("f-multiday").addEventListener("change", (e) => {
-    const on = e.target.checked;
-    document.getElementById("retour-block").style.display = on ? "block" : "none";
-    document.getElementById("lbl-date").textContent = on ? "Date de l'aller" : "Date du trajet";
-    document.getElementById("lbl-duration").textContent = on ? "Durée aller (heures)" : "Durée totale A/R (heures)";
-    document.getElementById("lbl-distance").textContent = on ? "Distance aller (km)" : "Distance A/R (km)";
-  });
-
-  /* ================= ONGLETS ================= */
   function setTab(tab) {
-    activeTab = tab;
-    const isTrajets = tab === "trajets";
+    var isTrajets = tab === "trajets";
     document.getElementById("tab-trajets").classList.toggle("active", isTrajets);
     document.getElementById("tab-hs").classList.toggle("active", !isTrajets);
     document.getElementById("module-trajets").classList.toggle("active", isTrajets);
@@ -764,101 +466,36 @@
     document.getElementById("side-daylen").style.display = isTrajets ? "none" : "block";
     document.getElementById("rules-hs").style.display = isTrajets ? "none" : "block";
   }
-  document.getElementById("tab-trajets").addEventListener("click", () => setTab("trajets"));
-  document.getElementById("tab-hs").addEventListener("click", () => setTab("hs"));
 
-  /* ================= MODE COMPENSATION ================= */
-  document.getElementById("mode-repos").addEventListener("click", () => {
-    mode = "repos";
-    document.getElementById("mode-repos").classList.add("active");
-    document.getElementById("mode-prime").classList.remove("active");
-  });
-  document.getElementById("mode-prime").addEventListener("click", () => {
-    mode = "prime";
-    document.getElementById("mode-prime").classList.add("active");
-    document.getElementById("mode-repos").classList.remove("active");
-  });
-
-  document.getElementById("f-rate").addEventListener("input", (e) => {
-    hourlyRate = e.target.value;
-    saveData();
-    renderTrips();
-  });
-  document.getElementById("f-daylen").addEventListener("input", (e) => {
-    dayLength = e.target.value;
-    saveData();
-    renderOvertime();
-  });
-
-  /* ================= AJOUT TRAJET ================= */
-  document.getElementById("btn-add").addEventListener("click", () => {
-    const dateVal = document.getElementById("f-date").value;
-    const durationVal = document.getElementById("f-duration").value;
-    const distanceVal = document.getElementById("f-distance").value;
-    const labelVal = document.getElementById("f-label").value;
-    const holidayVal = document.getElementById("f-holiday").checked;
-    const contractVal = document.getElementById("f-contract").checked;
-    const multiDay = document.getElementById("f-multiday").checked;
-    const errorEl = document.getElementById("f-error");
-
+  function addTrip() {
+    var dateVal = document.getElementById("f-date").value;
+    var durationVal = document.getElementById("f-duration").value;
+    var distanceVal = document.getElementById("f-distance").value;
+    var labelVal = document.getElementById("f-label").value;
+    var holidayVal = document.getElementById("f-holiday").checked;
+    var contractVal = document.getElementById("f-contract").checked;
+    var multiDay = document.getElementById("f-multiday").checked;
+    var errorEl = document.getElementById("f-error");
     errorEl.style.display = "none";
-
-    if (!dateVal) {
-      errorEl.textContent = multiDay ? "⚠ Indique la date de l'aller." : "⚠ Indique une date de trajet.";
-      errorEl.style.display = "flex";
-      return;
-    }
-    if (!durationVal || parseFloat(durationVal) <= 0) {
-      errorEl.textContent = multiDay ? "⚠ Indique une durée d'aller valide (en heures)." : "⚠ Indique une durée totale aller-retour valide (en heures).";
-      errorEl.style.display = "flex";
-      return;
-    }
-
+    if (!dateVal) { errorEl.textContent = multiDay ? "⚠ Indique la date de l'aller." : "⚠ Indique une date de trajet."; errorEl.style.display = "flex"; return; }
+    if (!durationVal || parseFloat(durationVal) <= 0) { errorEl.textContent = multiDay ? "⚠ Indique une durée d'aller valide (en heures)." : "⚠ Indique une durée totale aller-retour valide (en heures)."; errorEl.style.display = "flex"; return; }
     if (multiDay) {
-      const rDate = document.getElementById("r-date").value;
-      const rDuration = document.getElementById("r-duration").value;
-      const rDistance = document.getElementById("r-distance").value;
-      const rHoliday = document.getElementById("r-holiday").checked;
-      const rContract = document.getElementById("r-contract").checked;
-
-      if (!rDate) {
-        errorEl.textContent = "⚠ Indique la date du retour.";
-        errorEl.style.display = "flex";
-        return;
-      }
-      if (!rDuration || parseFloat(rDuration) <= 0) {
-        errorEl.textContent = "⚠ Indique une durée de retour valide (en heures).";
-        errorEl.style.display = "flex";
-        return;
-      }
-
-      trips.push({
-        id: uid(),
-        multiDay: true,
-        label: labelVal,
-        mode: mode,
-        legs: [
-          { date: dateVal, duration: durationVal, distance: distanceVal, weekend: isWeekendDate(dateVal), holiday: holidayVal, duringContractHours: contractVal },
-          { date: rDate, duration: rDuration, distance: rDistance, weekend: isWeekendDate(rDate), holiday: rHoliday, duringContractHours: rContract }
-        ]
-      });
+      var rDate = document.getElementById("r-date").value;
+      var rDuration = document.getElementById("r-duration").value;
+      var rDistance = document.getElementById("r-distance").value;
+      var rHoliday = document.getElementById("r-holiday").checked;
+      var rContract = document.getElementById("r-contract").checked;
+      if (!rDate) { errorEl.textContent = "⚠ Indique la date du retour."; errorEl.style.display = "flex"; return; }
+      if (!rDuration || parseFloat(rDuration) <= 0) { errorEl.textContent = "⚠ Indique une durée de retour valide (en heures)."; errorEl.style.display = "flex"; return; }
+      trips.push({ id: uid(), multiDay: true, label: labelVal, mode: mode, legs: [
+        { date: dateVal, duration: durationVal, distance: distanceVal, weekend: isWeekendDate(dateVal), holiday: holidayVal, duringContractHours: contractVal },
+        { date: rDate, duration: rDuration, distance: rDistance, weekend: isWeekendDate(rDate), holiday: rHoliday, duringContractHours: rContract }
+      ] });
     } else {
-      trips.push({
-        id: uid(),
-        date: dateVal,
-        duration: durationVal,
-        distance: distanceVal,
-        weekend: isWeekendDate(dateVal),
-        holiday: holidayVal,
-        duringContractHours: contractVal,
-        label: labelVal,
-        mode: mode
-      });
+      trips.push({ id: uid(), date: dateVal, duration: durationVal, distance: distanceVal, weekend: isWeekendDate(dateVal), holiday: holidayVal, duringContractHours: contractVal, label: labelVal, mode: mode });
     }
-
     saveData();
     renderTrips();
-
     document.getElementById("f-date").value = "";
     document.getElementById("f-duration").value = "";
     document.getElementById("f-distance").value = "";
@@ -869,4 +506,69 @@
     document.getElementById("retour-block").style.display = "none";
     document.getElementById("lbl-date").textContent = "Date du trajet";
     document.getElementById("lbl-duration").textContent = "Durée totale A/R (heures)";
-    document.getElementById("lbl-distance").textContent
+    document.getElementById("lbl-distance").textContent = "Distance A/R (km)";
+    document.getElementById("r-date").value = "";
+    document.getElementById("r-duration").value = "";
+    document.getElementById("r-distance").value = "";
+    document.getElementById("r-holiday").checked = false;
+    document.getElementById("r-contract").checked = false;
+    updateDetect(); updateDetectR();
+  }
+
+  function addWorkDay() {
+    var dateVal = document.getElementById("h-date").value;
+    var startVal = document.getElementById("h-start").value;
+    var endVal = document.getElementById("h-end").value;
+    var pauseVal = document.getElementById("h-pause").value;
+    var labelVal = document.getElementById("h-label").value;
+    var errorEl = document.getElementById("h-error");
+    errorEl.style.display = "none";
+    if (!dateVal) { errorEl.textContent = "⚠ Indique une date."; errorEl.style.display = "flex"; return; }
+    if (!startVal || !endVal) { errorEl.textContent = "⚠ Indique l'heure de début et l'heure de fin."; errorEl.style.display = "flex"; return; }
+    var testWorked = dayWorkedHours({ start: startVal, end: endVal, pause: pauseVal });
+    if (testWorked !== null && testWorked <= 0) { errorEl.textContent = "⚠ La durée de travail obtenue est nulle : vérifie début, fin et pause."; errorEl.style.display = "flex"; return; }
+    overtime.push({ id: uid(), date: dateVal, start: startVal, end: endVal, pause: pauseVal || "0", label: labelVal });
+    saveData();
+    renderOvertime();
+    document.getElementById("h-date").value = "";
+    document.getElementById("h-start").value = "";
+    document.getElementById("h-end").value = "";
+    document.getElementById("h-pause").value = "";
+    document.getElementById("h-label").value = "";
+    updateDetectHS();
+  }
+
+  document.getElementById("f-date").addEventListener("change", updateDetect);
+  document.getElementById("h-date").addEventListener("change", updateDetectHS);
+  document.getElementById("r-date").addEventListener("change", updateDetectR);
+  document.getElementById("f-multiday").addEventListener("change", function (e) {
+    var on = e.target.checked;
+    document.getElementById("retour-block").style.display = on ? "block" : "none";
+    document.getElementById("lbl-date").textContent = on ? "Date de l'aller" : "Date du trajet";
+    document.getElementById("lbl-duration").textContent = on ? "Durée aller (heures)" : "Durée totale A/R (heures)";
+    document.getElementById("lbl-distance").textContent = on ? "Distance aller (km)" : "Distance A/R (km)";
+  });
+  document.getElementById("tab-trajets").addEventListener("click", function () { setTab("trajets"); });
+  document.getElementById("tab-hs").addEventListener("click", function () { setTab("hs"); });
+  document.getElementById("mode-repos").addEventListener("click", function () { mode = "repos"; document.getElementById("mode-repos").classList.add("active"); document.getElementById("mode-prime").classList.remove("active"); });
+  document.getElementById("mode-prime").addEventListener("click", function () { mode = "prime"; document.getElementById("mode-prime").classList.add("active"); document.getElementById("mode-repos").classList.remove("active"); });
+  document.getElementById("f-rate").addEventListener("input", function (e) { hourlyRate = e.target.value; saveData(); renderTrips(); });
+  document.getElementById("f-daylen").addEventListener("input", function (e) { dayLength = e.target.value; saveData(); renderOvertime(); });
+  document.getElementById("btn-add").addEventListener("click", addTrip);
+  document.getElementById("btn-add-hs").addEventListener("click", addWorkDay);
+
+  loadData();
+  document.getElementById("f-rate").value = hourlyRate;
+  document.getElementById("f-daylen").value = dayLength;
+  setTab("trajets");
+  render();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+</script>
+
+</body>
+</html>
