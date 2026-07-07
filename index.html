@@ -218,6 +218,8 @@
   var hourlyRate = "";
   var dayLength = "7";
   var mode = "repos";
+  var editingTripId = null;
+  var editingOtId = null;
 
   function loadData() {
     try {
@@ -366,10 +368,13 @@
           metaHtml = metaBits.join(" · ");
           reasonHtml = '<div class="trip-reason">' + t.comp.calc.reason + '</div>';
         }
-        return '<div class="trip"><div class="dot-col"><div class="dot ' + (eligible ? "eligible" : "") + '"></div></div><div class="trip-body"><div class="trip-top"><span class="trip-title">' + titleDate + (t.label ? " — " + escapeHtml(t.label) : "") + '</span><button class="del-btn" data-id="' + t.id + '" title="Supprimer">🗑</button></div><div class="trip-meta">' + metaHtml + '</div><div class="trip-result ' + (eligible ? "eligible" : "") + '">' + resultHtml + '</div>' + reasonHtml + '</div></div>';
+        return '<div class="trip"><div class="dot-col"><div class="dot ' + (eligible ? "eligible" : "") + '"></div></div><div class="trip-body"><div class="trip-top"><span class="trip-title">' + titleDate + (t.label ? " — " + escapeHtml(t.label) : "") + '</span><span style="white-space:nowrap;"><button class="edit-trip" data-id="' + t.id + '" title="Modifier" style="background:none;border:none;color:#26433A;cursor:pointer;padding:4px;font-size:15px;">✏️</button><button class="del-btn" data-id="' + t.id + '" title="Supprimer">🗑</button></span></div><div class="trip-meta">' + metaHtml + '</div><div class="trip-result ' + (eligible ? "eligible" : "") + '">' + resultHtml + '</div>' + reasonHtml + '</div></div>';
       }).join("");
       list.querySelectorAll(".del-btn").forEach(function (btn) {
         btn.addEventListener("click", function () { trips = trips.filter(function (t) { return t.id !== btn.dataset.id; }); saveData(); renderTrips(); });
+      });
+      list.querySelectorAll(".edit-trip").forEach(function (btn) {
+        btn.addEventListener("click", function () { startEditTrip(btn.dataset.id); });
       });
     }
     var totalRepos = enriched.filter(function (t) { return t.mode === "repos"; }).reduce(function (s, t) { return s + t.comp.totalHours; }, 0);
@@ -414,12 +419,15 @@
           var pause = parseFloat(o.pause) || 0;
           sub = fmtTime(o.start) + "–" + fmtTime(o.end) + (pause ? " (−" + pause + " min)" : "") + " → " + fmtHours(worked) + " travaillées";
         } else { sub = "heures supp. saisies directement"; }
-        return '<div class="ot-row"><div><div class="ot-info">' + formatDate(o.date) + (o.label ? " — " + escapeHtml(o.label) : "") + ' <button class="del-btn" data-id="' + o.id + '" title="Supprimer" style="font-size:14px;">🗑</button></div><div class="ot-sub">' + sub + '</div></div><div class="ot-hours ' + (o.hs > 0 ? "" : "zero") + '">' + (o.hs > 0 ? "+ " + fmtHours(o.hs) : "0 h supp") + '</div></div>';
+        return '<div class="ot-row"><div><div class="ot-info">' + formatDate(o.date) + (o.label ? " — " + escapeHtml(o.label) : "") + ' <button class="edit-ot" data-id="' + o.id + '" title="Modifier" style="background:none;border:none;color:#26433A;cursor:pointer;padding:4px;font-size:14px;">✏️</button><button class="del-btn" data-id="' + o.id + '" title="Supprimer" style="font-size:14px;">🗑</button></div><div class="ot-sub">' + sub + '</div></div><div class="ot-hours ' + (o.hs > 0 ? "" : "zero") + '">' + (o.hs > 0 ? "+ " + fmtHours(o.hs) : "0 h supp") + '</div></div>';
       }).join("");
       return '<div class="week-group"><div class="week-head"><div><div class="week-title">Semaine ' + g.info.week + ' · ' + g.info.year + '</div><div class="trip-meta">' + fmtShort(g.info.monday) + ' → ' + fmtShort(g.info.sunday) + '</div></div><div style="text-align:right;"><div class="week-total">' + fmtHours(g.total) + ' supp</div><div class="week-days">≈ ' + daysRounded.toString().replace(".", ",") + ' j de récup</div></div></div>' + rows + '</div>';
     }).join("");
     list.querySelectorAll(".del-btn").forEach(function (btn) {
       btn.addEventListener("click", function () { overtime = overtime.filter(function (o) { return o.id !== btn.dataset.id; }); saveData(); renderOvertime(); });
+    });
+    list.querySelectorAll(".edit-ot").forEach(function (btn) {
+      btn.addEventListener("click", function () { startEditWorkDay(btn.dataset.id); });
     });
     var total = overtime.reduce(function (s, o) { return s + dayOvertime(o, base); }, 0);
     var totalDays = total / base;
@@ -467,6 +475,60 @@
     document.getElementById("rules-hs").style.display = isTrajets ? "none" : "block";
   }
 
+  function startEditTrip(id) {
+    var t = trips.filter(function (x) { return x.id === id; })[0];
+    if (!t) return;
+    var multi = !!t.multiDay;
+    document.getElementById("f-multiday").checked = multi;
+    document.getElementById("retour-block").style.display = multi ? "block" : "none";
+    document.getElementById("lbl-date").textContent = multi ? "Date de l'aller" : "Date du trajet";
+    document.getElementById("lbl-duration").textContent = multi ? "Durée aller (heures)" : "Durée totale A/R (heures)";
+    document.getElementById("lbl-distance").textContent = multi ? "Distance aller (km)" : "Distance A/R (km)";
+    document.getElementById("f-label").value = t.label || "";
+    mode = t.mode || "repos";
+    document.getElementById("mode-repos").classList.toggle("active", mode === "repos");
+    document.getElementById("mode-prime").classList.toggle("active", mode === "prime");
+    if (multi) {
+      var a = t.legs[0] || {}, b = t.legs[1] || {};
+      document.getElementById("f-date").value = a.date || "";
+      document.getElementById("f-duration").value = a.duration || "";
+      document.getElementById("f-distance").value = a.distance || "";
+      document.getElementById("f-holiday").checked = !!a.holiday;
+      document.getElementById("f-contract").checked = !!a.duringContractHours;
+      document.getElementById("r-date").value = b.date || "";
+      document.getElementById("r-duration").value = b.duration || "";
+      document.getElementById("r-distance").value = b.distance || "";
+      document.getElementById("r-holiday").checked = !!b.holiday;
+      document.getElementById("r-contract").checked = !!b.duringContractHours;
+    } else {
+      document.getElementById("f-date").value = t.date || "";
+      document.getElementById("f-duration").value = t.duration || "";
+      document.getElementById("f-distance").value = t.distance || "";
+      document.getElementById("f-holiday").checked = !!t.holiday;
+      document.getElementById("f-contract").checked = !!t.duringContractHours;
+    }
+    editingTripId = id;
+    document.getElementById("btn-add").textContent = "💾 Enregistrer les modifications";
+    document.getElementById("f-error").style.display = "none";
+    updateDetect(); updateDetectR();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function startEditWorkDay(id) {
+    var o = overtime.filter(function (x) { return x.id === id; })[0];
+    if (!o) return;
+    document.getElementById("h-date").value = o.date || "";
+    document.getElementById("h-start").value = o.start || "";
+    document.getElementById("h-end").value = o.end || "";
+    document.getElementById("h-pause").value = (o.pause != null ? o.pause : "");
+    document.getElementById("h-label").value = o.label || "";
+    editingOtId = id;
+    document.getElementById("btn-add-hs").textContent = "💾 Enregistrer les modifications";
+    document.getElementById("h-error").style.display = "none";
+    updateDetectHS();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function addTrip() {
     var dateVal = document.getElementById("f-date").value;
     var durationVal = document.getElementById("f-duration").value;
@@ -479,6 +541,8 @@
     errorEl.style.display = "none";
     if (!dateVal) { errorEl.textContent = multiDay ? "⚠ Indique la date de l'aller." : "⚠ Indique une date de trajet."; errorEl.style.display = "flex"; return; }
     if (!durationVal || parseFloat(durationVal) <= 0) { errorEl.textContent = multiDay ? "⚠ Indique une durée d'aller valide (en heures)." : "⚠ Indique une durée totale aller-retour valide (en heures)."; errorEl.style.display = "flex"; return; }
+    var newId = editingTripId || uid();
+    var newTrip;
     if (multiDay) {
       var rDate = document.getElementById("r-date").value;
       var rDuration = document.getElementById("r-duration").value;
@@ -487,13 +551,15 @@
       var rContract = document.getElementById("r-contract").checked;
       if (!rDate) { errorEl.textContent = "⚠ Indique la date du retour."; errorEl.style.display = "flex"; return; }
       if (!rDuration || parseFloat(rDuration) <= 0) { errorEl.textContent = "⚠ Indique une durée de retour valide (en heures)."; errorEl.style.display = "flex"; return; }
-      trips.push({ id: uid(), multiDay: true, label: labelVal, mode: mode, legs: [
+      newTrip = { id: newId, multiDay: true, label: labelVal, mode: mode, legs: [
         { date: dateVal, duration: durationVal, distance: distanceVal, weekend: isWeekendDate(dateVal), holiday: holidayVal, duringContractHours: contractVal },
         { date: rDate, duration: rDuration, distance: rDistance, weekend: isWeekendDate(rDate), holiday: rHoliday, duringContractHours: rContract }
-      ] });
+      ] };
     } else {
-      trips.push({ id: uid(), date: dateVal, duration: durationVal, distance: distanceVal, weekend: isWeekendDate(dateVal), holiday: holidayVal, duringContractHours: contractVal, label: labelVal, mode: mode });
+      newTrip = { id: newId, date: dateVal, duration: durationVal, distance: distanceVal, weekend: isWeekendDate(dateVal), holiday: holidayVal, duringContractHours: contractVal, label: labelVal, mode: mode };
     }
+    if (editingTripId) { trips = trips.map(function (t) { return t.id === editingTripId ? newTrip : t; }); editingTripId = null; document.getElementById("btn-add").textContent = "➕ Ajouter ce trajet"; }
+    else { trips.push(newTrip); }
     saveData();
     renderTrips();
     document.getElementById("f-date").value = "";
@@ -527,7 +593,9 @@
     if (!startVal || !endVal) { errorEl.textContent = "⚠ Indique l'heure de début et l'heure de fin."; errorEl.style.display = "flex"; return; }
     var testWorked = dayWorkedHours({ start: startVal, end: endVal, pause: pauseVal });
     if (testWorked !== null && testWorked <= 0) { errorEl.textContent = "⚠ La durée de travail obtenue est nulle : vérifie début, fin et pause."; errorEl.style.display = "flex"; return; }
-    overtime.push({ id: uid(), date: dateVal, start: startVal, end: endVal, pause: pauseVal || "0", label: labelVal });
+    var otRec = { id: editingOtId || uid(), date: dateVal, start: startVal, end: endVal, pause: pauseVal || "0", label: labelVal };
+    if (editingOtId) { overtime = overtime.map(function (o) { return o.id === editingOtId ? otRec : o; }); editingOtId = null; document.getElementById("btn-add-hs").textContent = "➕ Ajouter cette journée"; }
+    else { overtime.push(otRec); }
     saveData();
     renderOvertime();
     document.getElementById("h-date").value = "";
