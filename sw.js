@@ -1,13 +1,13 @@
-const CACHE = 'asdev-suivi-v1';
-const ASSETS = ['./', './index.html', './manifest.webmanifest',
-                './icon-192.png', './icon-512.png', './icon-180.png'];
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
-});
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
-});
-self.addEventListener('fetch', e => {
+const CACHE = 'asdev-suivi-v2';
+const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png'];
+self.addEventListener('install', function (e) { e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); })); });
+self.addEventListener('activate', function (e) { e.waitUntil(caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { if (k !== CACHE) return caches.delete(k); })); }).then(function () { return self.clients.claim(); })); });
+self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => r)));
+  var req = e.request, isDoc = req.mode === 'navigate' || req.destination === 'document';
+  if (isDoc) {
+    e.respondWith(fetch(req).then(function (resp) { var c = resp.clone(); caches.open(CACHE).then(function (ca) { ca.put(req, c); }); return resp; }).catch(function () { return caches.match(req).then(function (r) { return r || caches.match('./index.html'); }); }));
+  } else {
+    e.respondWith(caches.match(req).then(function (r) { return r || fetch(req); }));
+  }
 });
