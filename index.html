@@ -1,594 +1,574 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Trajets ASDEV</title>
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#f39321">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Trajets ASDEV">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23fff' stroke='%23f39321' stroke-width='5'/%3E%3Cpolyline points='24,62 42,46 58,56 76,42' fill='none' stroke='%231a1a1a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#26433A" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Suivi ASDEV" />
+<link rel="apple-touch-icon" href="icon-180.png" />
+<title>Suivi des déplacements & heures — ASDEV</title>
 <style>
-  :root{
-    --bg:#ffffff; --panel:#ffffff; --panel2:#faf6ef; --line:#eae4da;
-    --txt:#1a1a1a; --muted:#8a817a; --acc:#f39321; --acc-dark:#d97a10;
-    --acc2:#16a34a; --danger:#dc2626; --warn:#d97706; --radius:12px;
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:15px;}
-  header{position:sticky;top:0;z-index:1000;background:#fff;
-    padding:calc(12px + env(safe-area-inset-top)) 14px 12px;border-bottom:3px solid var(--acc);
-    display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
-  header svg.logo{width:42px;height:42px;flex:none;}
-  header h1{font-size:16px;margin:0;font-weight:800;letter-spacing:.3px;text-transform:uppercase;}
-  header h1 .o{color:var(--acc);}
-  header .sub{font-size:11px;color:var(--muted);font-weight:500;margin-top:1px;}
-  .wrap{padding:12px;max-width:820px;margin:0 auto;padding-bottom:calc(24px + env(safe-area-inset-bottom));}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
-  .card h2{font-size:13px;margin:0 0 10px;color:var(--txt);text-transform:uppercase;
-    letter-spacing:.5px;font-weight:800;padding-left:10px;border-left:4px solid var(--acc);}
-  .card h2 .edit-tag{color:var(--acc-dark);font-weight:700;text-transform:none;letter-spacing:0;}
-  label{display:block;font-size:12px;color:var(--muted);margin:8px 0 3px;}
-  input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);
-    color:var(--txt);border-radius:9px;padding:11px;font-size:15px;font-family:inherit;}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);
-    box-shadow:0 0 0 3px rgba(243,147,33,.18);}
-  textarea{resize:vertical;min-height:44px;}
-  .row{display:flex;gap:8px;}
-  .row>*{flex:1;}
-  button{cursor:pointer;border:none;border-radius:9px;padding:12px;font-size:14px;
-    font-weight:600;color:#fff;font-family:inherit;transition:opacity .15s;}
-  button:active{opacity:.7;}
-  .btn-gps{background:var(--acc);width:100%;margin-top:4px;}
-  .btn-gps:active{background:var(--acc-dark);}
-  .btn-add{background:var(--panel2);border:1px dashed var(--acc);color:var(--acc-dark);width:100%;font-weight:700;}
-  .btn-save{background:#1a1a1a;width:100%;font-size:16px;padding:14px;margin-top:6px;}
-  .btn-cancel{background:#fff;border:1px solid var(--line);color:var(--txt);width:100%;margin-top:6px;display:none;}
-  .btn-sm{padding:8px 10px;font-size:12px;}
-  .btn-grey{background:#fff;border:1px solid var(--line);color:var(--txt);}
-  .btn-edit{background:transparent;color:var(--acc-dark);border:1px solid var(--acc);}
-  .btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger);}
-  .loc-status{font-size:12px;margin-top:4px;min-height:16px;color:var(--acc2);word-break:break-word;}
-  .loc-status.err{color:var(--danger);}
-  .loc-status.wait{color:var(--warn);}
-  .loc-status.set{color:var(--acc-dark);}
-  .stop{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px;
-    margin-bottom:8px;position:relative;}
-  .stop .rm{position:absolute;top:6px;right:6px;background:transparent;color:var(--danger);padding:4px 8px;font-size:12px;}
-  .ac-wrap{position:relative;}
-  .ac-list{position:absolute;z-index:2000;left:0;right:0;top:calc(100% - 2px);background:#fff;
-    border:1px solid var(--acc);border-radius:0 0 10px 10px;max-height:240px;overflow:auto;box-shadow:0 8px 20px rgba(0,0,0,.14);}
-  .ac-item{padding:10px 11px;border-bottom:1px solid var(--line);cursor:pointer;line-height:1.3;}
-  .ac-item:last-child{border-bottom:none;}
-  .ac-item.active,.ac-item:hover{background:var(--panel2);}
-  .ac-item b{font-size:13.5px;font-weight:600;}
-  .ac-item small{display:block;color:var(--muted);font-size:11px;margin-top:1px;}
-  .ac-msg{padding:10px 11px;color:var(--muted);font-size:12px;}
-  .btn-install{background:var(--acc);color:#fff;white-space:nowrap;font-size:12px;padding:8px 10px;}
-  .ios-tip{display:none;background:var(--panel2);border:1px solid var(--acc);border-radius:9px;padding:10px;font-size:12px;color:var(--txt);margin:0 0 12px;line-height:1.5;}
-  #map{width:100%;height:340px;border-radius:var(--radius);border:1px solid var(--line);background:#eef1f4;}
-  .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:end;}
-  .filters>div{flex:1;min-width:110px;}
-  .stats{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
-  .stat{flex:1;min-width:120px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px;text-align:center;}
-  .stat .v{font-size:20px;font-weight:800;color:var(--acc-dark);}
-  .stat .l{font-size:11px;color:var(--muted);margin-top:2px;}
-  table{width:100%;border-collapse:collapse;font-size:12.5px;}
-  th,td{padding:8px 6px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;}
-  th{color:var(--muted);font-size:11px;text-transform:uppercase;}
-  td .t-route{font-weight:600;}
-  td .t-sub{color:var(--muted);font-size:11px;}
-  .km-badge{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:11px;margin:1px 0;white-space:nowrap;}
-  .actions{display:flex;gap:4px;flex-direction:column;}
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap;}
-  .toolbar button{flex:1;min-width:130px;}
-  .empty{color:var(--muted);text-align:center;padding:24px 0;font-size:13px;}
-  .hint{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4;}
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Work Sans', sans-serif; background: #EFEAE0; color: #2A2620; }
+  .header { background: #26433A; color: #F3EFE4; padding: 28px 24px 40px; }
+  .header-inner { max-width: 980px; margin: 0 auto; }
+  .eyebrow { display: flex; align-items: center; gap: 8px; opacity: 0.85; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 34px; margin: 0; line-height: 1.15; }
+  .subtitle { max-width: 640px; opacity: 0.85; margin-top: 10px; font-size: 15px; line-height: 1.5; }
+  .layout { max-width: 980px; margin: -24px auto 0; padding: 0 24px 60px; display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 20px; }
+  @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+  .card { background: #FBF9F4; border-radius: 14px; padding: 22px; box-shadow: 0 8px 24px rgba(38,67,58,0.10); }
+  .card h2 { font-family: 'Fraunces', serif; font-size: 19px; margin: 0 0 16px; display: flex; align-items: center; gap: 8px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 480px) { .grid-2 { grid-template-columns: 1fr; } }
+  label.field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #5C5648; }
+  input[type=text], input[type=date], input[type=number], input[type=time] { font-family: 'Work Sans', sans-serif; font-size: 14px; padding: 9px 11px; border-radius: 8px; border: 1px solid #DAD3C2; background: #FFFDFA; color: #2A2620; outline: none; width: 100%; }
+  .checks { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 16px; align-items: center; }
+  .check-label { font-size: 13px; display: flex; align-items: center; gap: 6px; color: #5C5648; }
+  .detect { font-size: 13px; display: flex; align-items: center; gap: 6px; color: #5C5648; }
+  .mode-row { display: flex; gap: 10px; margin-top: 6px; }
+  .pill { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 8px; border: 1px solid #DAD3C2; background: #FFFDFA; color: #5C5648; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .pill.active { border: 1px solid #26433A; background: #26433A; color: #F3EFE4; }
+  .error { margin-top: 14px; color: #B0432A; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+  .btn-primary { margin-top: 18px; width: 100%; background: #C1662F; color: #FBF9F4; border: none; border-radius: 9px; padding: 11px 16px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-primary:hover { background: #AD5726; }
+  .empty { font-size: 14px; color: #8A8373; }
+  .trip { display: flex; gap: 14px; padding: 14px 0; border-top: 1px solid #E6E0D2; }
+  .trip:first-child { border-top: none; }
+  .dot-col { width: 14px; display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #C9C2AF; }
+  .dot.eligible { background: #C1662F; }
+  .trip-body { flex: 1; }
+  .trip-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .trip-title { font-weight: 600; font-size: 14.5px; }
+  .del-btn { background: none; border: none; color: #B0432A; cursor: pointer; padding: 4px; display: flex; align-items: center; font-size: 16px; }
+  .trip-meta { font-size: 13px; color: #6B6455; margin-top: 2px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .trip-result { font-size: 13px; margin-top: 6px; color: #8A8373; }
+  .trip-result.eligible { color: #26433A; }
+  .trip-reason { font-size: 12px; color: #9C9585; margin-top: 3px; }
+  .side { display: flex; flex-direction: column; gap: 16px; }
+  .summary-card { background: #26433A; color: #F3EFE4; border-radius: 14px; padding: 20px; }
+  .summary-card h3 { font-family: 'Fraunces', serif; font-size: 16px; margin: 0 0 14px; opacity: 0.9; }
+  .summary-block { margin-bottom: 14px; }
+  .summary-label { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.5px; }
+  .summary-value { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; }
+  .summary-eur { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+  .rate-note { font-size: 12px; color: #9C9585; margin-top: 8px; line-height: 1.5; }
+  .rules-card { font-size: 12.5px; color: #6B6455; line-height: 1.6; }
+  .rules-card strong { color: #2A2620; }
+  .storage-note { max-width: 980px; margin: 0 auto; padding: 0 24px 20px; font-size: 12px; color: #8A8373; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab { flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 12px 14px; border-radius: 11px; border: 1px solid #DAD3C2; background: #FBF9F4; color: #5C5648; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(38,67,58,0.06); }
+  .tab.active { border: 1px solid #26433A; background: #26433A; color: #F3EFE4; }
+  .module { display: none; }
+  .module.active { display: block; }
+  .week-group { padding: 14px 0; border-top: 1px solid #E6E0D2; }
+  .week-group:first-child { border-top: none; }
+  .week-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .week-title { font-weight: 600; font-size: 14.5px; }
+  .week-total { font-family: 'Fraunces', serif; font-size: 15px; color: #26433A; font-weight: 600; }
+  .week-days { font-size: 12.5px; color: #C1662F; margin-top: 2px; font-weight: 600; }
+  .ot-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 8px 0 0; }
+  .ot-info { font-size: 13px; color: #6B6455; }
+  .ot-sub { font-size: 12px; color: #9C9585; margin-top: 2px; }
+  .ot-hours { font-size: 13px; color: #26433A; font-weight: 600; white-space: nowrap; }
+  .ot-hours.zero { color: #9C9585; font-weight: 500; }
 </style>
 </head>
 <body>
-<header>
-  <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="ASDEV">
-    <circle cx="50" cy="50" r="46" fill="#fff" stroke="#f39321" stroke-width="4"/>
-    <polyline points="24,62 42,46 58,56 76,42" fill="none" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="24" cy="62" r="5" fill="#16a34a" stroke="#fff" stroke-width="2"/>
-    <circle cx="42" cy="46" r="4.5" fill="#f39321" stroke="#fff" stroke-width="2"/>
-    <circle cx="58" cy="56" r="4.5" fill="#f39321" stroke="#fff" stroke-width="2"/>
-    <circle cx="76" cy="42" r="5" fill="#dc2626" stroke="#fff" stroke-width="2"/>
-  </svg>
-  <div>
-    <h1>Carte des <span class="o">trajets</span></h1>
-    <div class="sub">ASDEV &middot; Agriculture &amp; Solaire</div>
-  </div>
-  <button class="btn-install" id="install-btn" style="display:none;margin-left:auto;">Installer</button>
-</header>
-<div class="wrap">
-  <div class="ios-tip" id="ios-tip">Installer sur iPhone : touchez <b>Partager</b> en bas de Safari, puis <b>&laquo; Sur l'écran d'accueil &raquo;</b>. L'app s'ouvrira en plein écran et le GPS fonctionnera.</div>
-  <div class="card">
-    <h2 id="form-title">Nouveau trajet</h2>
-    <label>Date du trajet</label>
-    <input type="date" id="f-date">
-    <label>Lieu de départ &mdash; tapez une adresse ou utilisez le GPS</label>
-    <div class="ac-wrap"><input type="text" id="dep-name" autocomplete="off" placeholder="Ex : 12 rue de la Paix, Lyon"></div>
-    <button class="btn-gps" id="dep-gps">Localiser mon départ (GPS)</button>
-    <div class="loc-status" id="dep-status"></div>
-    <label>Km au compteur &mdash; départ (optionnel)</label>
-    <input type="number" id="dep-km" inputmode="decimal" placeholder="Ex : 45820">
-    <div id="stops"></div>
-    <button class="btn-add" id="add-stop" style="margin-top:8px;">+ Ajouter un arrêt intermédiaire</button>
-    <label style="margin-top:14px;">Lieu d'arrivée &mdash; tapez une adresse ou utilisez le GPS</label>
-    <div class="ac-wrap"><input type="text" id="arr-name" autocomplete="off" placeholder="Ex : 3 av. des Champs, Paris"></div>
-    <button class="btn-gps" id="arr-gps">Localiser mon arrivée (GPS)</button>
-    <div class="loc-status" id="arr-status"></div>
-    <label>Km au compteur &mdash; arrivée (optionnel)</label>
-    <input type="number" id="arr-km" inputmode="decimal" placeholder="Ex : 45867">
-    <div class="row" style="margin-top:10px;">
-      <div><label>Distance compteur</label><input type="text" id="dist-odo" readonly placeholder="- km"></div>
-      <div><label>Distance par la route</label><input type="text" id="dist-route" readonly placeholder="- km"></div>
-    </div>
-    <label>Note (optionnel)</label>
-    <textarea id="f-note" placeholder="Motif, client, remarque"></textarea>
-    <button class="btn-save" id="save-trip">Enregistrer le trajet</button>
-    <button class="btn-cancel" id="cancel-edit">Annuler la modification</button>
-    <div class="hint">Tapez une adresse (liste déroulante) ou utilisez le GPS. La distance et le tracé suivent le réseau routier (nécessite internet ; repli en pointillés à vol d'oiseau si indisponible).</div>
-  </div>
-  <div class="card">
-    <h2>Carte des flux</h2>
-    <div class="filters">
-      <div><label>Année</label><select id="filter-year"></select></div>
-      <div><label>Mois</label><select id="filter-month"></select></div>
-    </div>
-    <div class="stats" id="stats"></div>
-    <div id="map"></div>
-    <div class="hint">Ligne pleine = itinéraire routier. Pointillés = estimation à vol d'oiseau. Vert = départ, orange = arrêt, rouge = arrivée.</div>
-  </div>
-  <div class="card">
-    <h2>Liste des trajets</h2>
-    <div id="table-wrap"></div>
-  </div>
-  <div class="card">
-    <h2>Export &amp; sauvegarde</h2>
-    <div class="toolbar">
-      <button class="btn-grey btn-sm" id="dl-map">Télécharger la carte (PNG)</button>
-      <button class="btn-grey btn-sm" id="dl-csv">Exporter le tableau (CSV)</button>
-    </div>
-    <div class="toolbar" style="margin-top:8px;">
-      <button class="btn-grey btn-sm" id="dl-json">Sauvegarde complète (JSON)</button>
-      <button class="btn-grey btn-sm" id="up-json">Restaurer une sauvegarde</button>
-      <input type="file" id="json-file" accept="application/json" style="display:none;">
-    </div>
-    <div class="hint">Les données restent sur cet appareil uniquement. Pensez à faire une sauvegarde JSON régulièrement.</div>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="eyebrow">🧭 ASDEV — Note interne du 15/09/2025</div>
+    <h1>Suivi des déplacements & heures</h1>
+    <p class="subtitle">Deux journaux en un : la <strong>compensation de tes trajets</strong> selon la règle (X − 2) × 50 %, et tes <strong>heures de travail sur le terrain</strong>, dont les heures supplémentaires sont cumulées par semaine pour poser tes jours de récupération.</p>
   </div>
 </div>
+
+<div class="layout">
+  <div class="main-col">
+
+    <div class="tabs">
+      <button type="button" class="tab active" id="tab-trajets">🛣 Trajets & compensation</button>
+      <button type="button" class="tab" id="tab-hs">🕒 Heures de travail</button>
+    </div>
+
+    <div class="module active" id="module-trajets">
+      <div class="card" style="margin-bottom:20px;">
+        <h2>➕ Ajouter un trajet</h2>
+        <div class="grid-2">
+          <label class="field"><span id="lbl-date">Date du trajet</span><input type="date" id="f-date" /></label>
+          <label class="field">Repère (facultatif)<input type="text" id="f-label" placeholder="ex. Visite Verfeil" /></label>
+          <label class="field"><span id="lbl-duration">Durée totale A/R (heures)</span><input type="number" id="f-duration" step="0.25" min="0" placeholder="ex. 5.5" /></label>
+          <label class="field"><span id="lbl-distance">Distance A/R (km)</span><input type="number" id="f-distance" step="1" min="0" placeholder="ex. 320" /></label>
+        </div>
+        <div class="checks">
+          <div class="detect" id="f-detect">📅 Sélectionne une date</div>
+          <label class="check-label"><input type="checkbox" id="f-holiday" /> Jour férié</label>
+          <label class="check-label"><input type="checkbox" id="f-contract" /> Trajet pendant les horaires contractuels</label>
+          <label class="check-label"><input type="checkbox" id="f-multiday" /> 🔁 Aller / retour sur des jours différents</label>
+        </div>
+        <div id="retour-block" style="display:none; margin-top:16px; padding-top:16px; border-top:1px dashed #DAD3C2;">
+          <span style="font-size:13px; font-weight:700; color:#26433A; display:block; margin-bottom:10px;">🔁 Retour (jour différent)</span>
+          <div class="grid-2">
+            <label class="field">Date du retour<input type="date" id="r-date" /></label>
+            <label class="field">Durée retour (heures)<input type="number" id="r-duration" step="0.25" min="0" placeholder="ex. 4" /></label>
+            <label class="field">Distance retour (km)<input type="number" id="r-distance" step="1" min="0" placeholder="ex. 320" /></label>
+          </div>
+          <div class="checks">
+            <div class="detect" id="r-detect">📅 Sélectionne une date</div>
+            <label class="check-label"><input type="checkbox" id="r-holiday" /> Jour férié</label>
+            <label class="check-label"><input type="checkbox" id="r-contract" /> Retour pendant les horaires contractuels</label>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <span style="font-size:13px; font-weight:600; color:#5C5648; display:block; margin-bottom:6px;">Compensation souhaitée</span>
+          <div class="mode-row">
+            <button type="button" class="pill active" id="mode-repos">⏱ Repos compensateur</button>
+            <button type="button" class="pill" id="mode-prime">💶 Prime équivalente</button>
+          </div>
+        </div>
+        <div class="error" id="f-error" style="display:none;"></div>
+        <button class="btn-primary" id="btn-add">➕ Ajouter ce trajet</button>
+      </div>
+      <div class="card">
+        <h2>🛣 Journal de route</h2>
+        <div id="trip-list"></div>
+      </div>
+    </div>
+
+    <div class="module" id="module-hs">
+      <div class="card" style="margin-bottom:20px;">
+        <h2>➕ Ajouter une journée de travail</h2>
+        <p style="font-size:13px; color:#6B6455; margin:0 0 16px; line-height:1.5;">Note tes heures réelles sur la visite. L'outil calcule le <strong>travail effectif</strong> (fin − début − pause) et en déduit tes <strong>heures supplémentaires</strong> au-delà de ta base journalière, cumulées par semaine pour poser tes jours de récupération.</p>
+        <div class="grid-2">
+          <label class="field">Date<input type="date" id="h-date" /></label>
+          <label class="field">Repère / site (facultatif)<input type="text" id="h-label" placeholder="ex. Chantier Lauragais" /></label>
+          <label class="field">Heure de début<input type="time" id="h-start" /></label>
+          <label class="field">Heure de fin<input type="time" id="h-end" /></label>
+          <label class="field">Pause (minutes)<input type="number" id="h-pause" step="5" min="0" placeholder="ex. 30" /></label>
+        </div>
+        <div class="detect" id="h-detect" style="margin-top:14px;">📅 Sélectionne une date</div>
+        <div class="error" id="h-error" style="display:none;"></div>
+        <button class="btn-primary" id="btn-add-hs">➕ Ajouter cette journée</button>
+      </div>
+      <div class="card">
+        <h2>⏳ Heures supp. par semaine</h2>
+        <div id="hs-list"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="side">
+    <div class="card summary-card" id="side-trajets">
+      <h3>Compensation trajets</h3>
+      <div class="summary-block">
+        <div class="summary-label">Repos compensateur</div>
+        <div class="summary-value" id="sum-repos">0 h</div>
+      </div>
+      <div>
+        <div class="summary-label">Prime équivalente</div>
+        <div class="summary-value" id="sum-prime">0 h</div>
+        <div class="summary-eur" id="sum-eur" style="display:none;"></div>
+      </div>
+    </div>
+    <div class="card" id="side-rate">
+      <label class="field" style="margin-bottom:8px;">Taux horaire brut (€, facultatif)<input type="number" id="f-rate" step="0.01" min="0" placeholder="ex. 18.50" /></label>
+      <p class="rate-note">Utilisé uniquement pour estimer le montant de la prime équivalente. Cette estimation reste indicative — la validation revient à ton responsable hiérarchique.</p>
+    </div>
+    <div class="card summary-card" id="side-hs" style="display:none;">
+      <h3>Heures supp. terrain</h3>
+      <div class="summary-block">
+        <div class="summary-label">Total cumulé</div>
+        <div class="summary-value" id="sum-hs">0 h</div>
+      </div>
+      <div>
+        <div class="summary-label">Équivalent récupération</div>
+        <div class="summary-value" id="sum-hs-days">0 j</div>
+        <div class="summary-eur" id="sum-hs-days-note"></div>
+      </div>
+    </div>
+    <div class="card" id="side-daylen" style="display:none;">
+      <label class="field" style="margin-bottom:8px;">Base journalière (h)<input type="number" id="f-daylen" step="0.5" min="1" placeholder="ex. 7" /></label>
+      <p class="rate-note">Ta durée de travail effectif « normale » par jour. Sert de seuil pour les heures supplémentaires <em>et</em> de base pour convertir les heures cumulées en jours de récupération. Par défaut : 7 h (35 h/sem).</p>
+    </div>
+    <div class="card rules-card" id="rules-trajets">
+      <strong>Rappel de la règle — trajets</strong>
+      <p style="margin:8px 0 0;">Seuil : trajet A/R &gt; 2h ou &gt; 100 km.<br />Compensation = (X − 2) × 50 %.<br />Jour non travaillé : franchise supprimée, compensation dès la 1ère heure.<br />Trajet pendant les horaires contractuels : déjà comptabilisé comme temps de travail, pas de compensation en plus.<br /><strong>Aller / retour des jours différents :</strong> calcul « par jour » — chaque jour applique sa propre franchise selon son type, puis les heures s'additionnent.</p>
+    </div>
+    <div class="card rules-card" id="rules-hs" style="display:none;">
+      <strong>Rappel — heures de travail</strong>
+      <p style="margin:8px 0 0;">Travail effectif du jour = heure de fin − heure de début − pause.<br />Heures supp. du jour = travail effectif − base journalière (si positif).<br />Elles sont cumulées par semaine (du lundi au dimanche) pour planifier tes jours de récupération.<br />Chiffres indicatifs : la pose des jours de récup reste soumise à validation de ton responsable.</p>
+    </div>
+  </div>
+</div>
+
+<div class="storage-note">Les données sont enregistrées uniquement dans ce navigateur (stockage local), sur cet appareil. Rien n'est envoyé en ligne.</div>
+
 <script>
-"use strict";
-var KEY="trajets-asdev-v1";
-var trips=[];
-try{ trips=JSON.parse(localStorage.getItem(KEY)||"[]"); }catch(e){ trips=[]; }
-function persist(){ localStorage.setItem(KEY, JSON.stringify(trips)); }
+  var STORAGE_KEY = "asdev-trajets-v2";
+  var trips = [];
+  var overtime = [];
+  var hourlyRate = "";
+  var dayLength = "7";
+  var mode = "repos";
 
-function haversine(a,b){
-  var R=6371, toRad=function(x){return x*Math.PI/180;};
-  var dLat=toRad(b.lat-a.lat), dLng=toRad(b.lng-a.lng);
-  var s=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLng/2)*Math.sin(dLng/2);
-  return R*2*Math.atan2(Math.sqrt(s), Math.sqrt(1-s));
-}
-function fmtKm(n){ return (Math.round(n*10)/10).toLocaleString('fr-FR')+" km"; }
-function pad(n){ return String(n).padStart(2,'0'); }
-function esc(s){ return (s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
-var MONTHS=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
-
-function placeLabel(it){
-  var a=it.address||{};
-  var line1=[a.house_number,a.road].filter(Boolean).join(' ')||a.name||a.neighbourhood||a.suburb||a.hamlet||(it.display_name||'').split(',')[0];
-  var city=a.city||a.town||a.village||a.municipality||a.county||'';
-  var cp=a.postcode||'';
-  var sub=[cp,city,a.country].filter(Boolean).join(' ');
-  var full=[line1,[cp,city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
-  return {main:line1, sub:sub, full: full||line1};
-}
-function reverseGeocode(lat,lng){
-  return fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+lat+'&lon='+lng+'&zoom=16&addressdetails=1&accept-language=fr',{headers:{'Accept':'application/json'}})
-    .then(function(r){ return r.ok?r.json():null; })
-    .then(function(j){ return j?placeLabel(j).full:null; })
-    .catch(function(){ return null; });
-}
-
-function attachAutocomplete(input, onPick){
-  var wrap=input.closest('.ac-wrap'); if(!wrap) return;
-  var list=null, timer=null, controller=null, items=[], active=-1, lastQ="";
-  function close(){ if(list){ list.remove(); list=null; } active=-1; }
-  function ensureList(){ if(!list){ list=document.createElement('div'); list.className='ac-list'; wrap.appendChild(list); } }
-  function msg(t){ ensureList(); list.innerHTML='<div class="ac-msg">'+t+'</div>'; }
-  function render(){
-    ensureList();
-    if(!items.length){ list.innerHTML='<div class="ac-msg">Aucun résultat.</div>'; return; }
-    list.innerHTML="";
-    items.forEach(function(it,i){
-      var lab=placeLabel(it);
-      var d=document.createElement('div');
-      d.className='ac-item'+(i===active?' active':'');
-      d.innerHTML='<b>'+esc(lab.main)+'</b>'+(lab.sub?'<small>'+esc(lab.sub)+'</small>':'');
-      d.addEventListener('mousedown', function(e){ e.preventDefault(); choose(i); });
-      list.appendChild(d);
-    });
+  function loadData() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) { var oldRaw = localStorage.getItem("asdev-trajets-v1"); if (oldRaw) raw = oldRaw; }
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        trips = parsed.trips || [];
+        overtime = parsed.overtime || [];
+        hourlyRate = parsed.hourlyRate || "";
+        dayLength = parsed.dayLength || "7";
+      }
+    } catch (e) { console.error("Erreur de lecture", e); }
   }
-  function choose(i){
-    var it=items[i]; if(!it) return;
-    var lab=placeLabel(it);
-    input.value=lab.full; close();
-    onPick({lat:parseFloat(it.lat), lng:parseFloat(it.lon)}, lab.full);
+
+  function saveData() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ trips: trips, overtime: overtime, hourlyRate: hourlyRate, dayLength: dayLength })); }
+    catch (e) { console.error("Erreur de sauvegarde", e); }
   }
-  function search(q){
-    lastQ=q; ensureList(); msg("Recherche...");
-    if(controller) controller.abort();
-    controller=new AbortController();
-    fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&accept-language=fr&q='+encodeURIComponent(q),{signal:controller.signal, headers:{'Accept':'application/json'}})
-      .then(function(r){ if(!r.ok) throw new Error('http'); return r.json(); })
-      .then(function(data){ if(q!==lastQ) return; items=data; active=-1; render(); })
-      .catch(function(e){ if(e.name==='AbortError') return; msg("Recherche indisponible (hors-ligne ?). Saisissez le lieu à la main ou utilisez le GPS."); });
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+  function isWeekendDate(dateStr) {
+    if (!dateStr) return false;
+    var d = new Date(dateStr + "T00:00:00");
+    var day = d.getDay();
+    return day === 0 || day === 6;
   }
-  input.addEventListener('input', function(){
-    var q=input.value.trim(); clearTimeout(timer);
-    if(q.length<3){ close(); return; }
-    timer=setTimeout(function(){ search(q); }, 450);
-  });
-  input.addEventListener('keydown', function(e){
-    if(!list) return;
-    if(e.key==='ArrowDown'){ e.preventDefault(); active=Math.min(active+1, items.length-1); render(); }
-    else if(e.key==='ArrowUp'){ e.preventDefault(); active=Math.max(active-1, 0); render(); }
-    else if(e.key==='Enter'){ if(active>=0){ e.preventDefault(); choose(active); } }
-    else if(e.key==='Escape'){ close(); }
-  });
-  input.addEventListener('blur', function(){ setTimeout(close, 150); });
-}
 
-var draft={ dep:null, arr:null, stops:[], routeGeom:null, routeKm:null };
-var editId=null;
-var routeTimer=null;
-
-function routeOSRM(points){
-  var coords=points.map(function(p){ return p.lng+","+p.lat; }).join(";");
-  var url="https://router.project-osrm.org/route/v1/driving/"+coords+"?overview=full&geometries=geojson";
-  return fetch(url).then(function(r){ if(!r.ok) throw new Error("route"); return r.json(); })
-    .then(function(j){
-      if(!j.routes||!j.routes.length) return null;
-      var rt=j.routes[0];
-      return { km: Math.round(rt.distance/100)/10, geom: rt.geometry.coordinates.map(function(c){ return [c[1],c[0]]; }) };
-    });
-}
-function scheduleRoute(){
-  clearTimeout(routeTimer);
-  var pts=[draft.dep].concat(draft.stops.map(function(s){return s.coord;}), [draft.arr]).filter(Boolean);
-  var fld=document.getElementById('dist-route');
-  if(pts.length<2){ draft.routeGeom=null; draft.routeKm=null; if(fld) fld.value=""; return; }
-  if(fld) fld.value="Calcul de l'itinéraire...";
-  routeTimer=setTimeout(function(){
-    routeOSRM(pts).then(function(res){
-      if(res){ draft.routeKm=res.km; draft.routeGeom=res.geom; if(fld) fld.value=fmtKm(res.km); }
-      else { draft.routeKm=null; draft.routeGeom=null; if(fld) fld.value=""; }
-    }).catch(function(){
-      var d=0; for(var i=0;i<pts.length-1;i++) d+=haversine(pts[i],pts[i+1]);
-      if(!draft.routeGeom){ draft.routeKm=null; }
-      if(fld) fld.value=fmtKm(d)+" (à vol d'oiseau)";
-    });
-  }, 600);
-}
-
-function captureLocation(statusEl, nameEl, onDone){
-  if(!navigator.geolocation){ statusEl.className="loc-status err"; statusEl.textContent="GPS non disponible sur ce navigateur."; return; }
-  statusEl.className="loc-status wait"; statusEl.textContent="Localisation en cours...";
-  navigator.geolocation.getCurrentPosition(function(pos){
-    var lat=pos.coords.latitude, lng=pos.coords.longitude, acc=Math.round(pos.coords.accuracy);
-    statusEl.className="loc-status"; statusEl.textContent="Position : "+lat.toFixed(5)+", "+lng.toFixed(5)+" (+/-"+acc+" m)";
-    onDone({lat:lat,lng:lng});
-    if(nameEl && !nameEl.value.trim()){ reverseGeocode(lat,lng).then(function(name){ if(name && !nameEl.value.trim()) nameEl.value=name; }); }
-  }, function(err){
-    statusEl.className="loc-status err";
-    statusEl.textContent="Erreur : "+(err.code===1?"autorisation refusée.":"position introuvable.")+" Saisissez le lieu à la main.";
-  }, {enableHighAccuracy:true, timeout:15000, maximumAge:0});
-}
-
-function recalcDistances(){
-  var d=parseFloat(document.getElementById('dep-km').value);
-  var a=parseFloat(document.getElementById('arr-km').value);
-  var odo=document.getElementById('dist-odo');
-  if(!isNaN(d)&&!isNaN(a)&&a>=d) odo.value=fmtKm(a-d); else odo.value="";
-  scheduleRoute();
-}
-
-document.getElementById('dep-gps').onclick=function(){ captureLocation(document.getElementById('dep-status'), document.getElementById('dep-name'), function(c){ draft.dep=c; recalcDistances(); }); };
-attachAutocomplete(document.getElementById('dep-name'), function(coord,name){
-  draft.dep=coord;
-  var st=document.getElementById('dep-status'); st.className="loc-status set"; st.textContent="Choisi : "+name;
-  recalcDistances();
-});
-document.getElementById('arr-gps').onclick=function(){ captureLocation(document.getElementById('arr-status'), document.getElementById('arr-name'), function(c){ draft.arr=c; recalcDistances(); }); };
-attachAutocomplete(document.getElementById('arr-name'), function(coord,name){
-  draft.arr=coord;
-  var st=document.getElementById('arr-status'); st.className="loc-status set"; st.textContent="Choisi : "+name;
-  recalcDistances();
-});
-document.getElementById('dep-km').oninput=recalcDistances;
-document.getElementById('arr-km').oninput=recalcDistances;
-
-function renderStops(){
-  var box=document.getElementById('stops'); box.innerHTML="";
-  draft.stops.forEach(function(s,i){
-    var div=document.createElement('div'); div.className="stop";
-    div.innerHTML='<button class="rm" data-i="'+i+'">Retirer</button>'
-      +'<label>Arrêt '+(i+1)+' - adresse ou GPS</label>'
-      +'<div class="ac-wrap"><input type="text" class="stop-name" data-i="'+i+'" autocomplete="off" placeholder="Tapez une adresse" value="'+(s.name||'').replace(/"/g,'&quot;')+'"></div>'
-      +'<button class="btn-gps stop-gps" data-i="'+i+'">Localiser cet arrêt (GPS)</button>'
-      +'<div class="loc-status stop-status'+(s.coord?' set':'')+'" data-i="'+i+'">'+(s.coord?('Position : '+s.coord.lat.toFixed(5)+', '+s.coord.lng.toFixed(5)):'')+'</div>';
-    box.appendChild(div);
-  });
-  box.querySelectorAll('.rm').forEach(function(b){ b.onclick=function(){ draft.stops.splice(+b.dataset.i,1); renderStops(); recalcDistances(); }; });
-  box.querySelectorAll('.stop-name').forEach(function(inp){
-    var i=+inp.dataset.i;
-    inp.addEventListener('input', function(){ draft.stops[i].name=inp.value; });
-    attachAutocomplete(inp, function(coord,name){
-      draft.stops[i].coord=coord; draft.stops[i].name=name; inp.value=name;
-      var st=box.querySelector('.stop-status[data-i="'+i+'"]'); st.className="loc-status set"; st.textContent="Choisi : "+name;
-      recalcDistances();
-    });
-  });
-  box.querySelectorAll('.stop-gps').forEach(function(b){ b.onclick=function(){
-    var i=+b.dataset.i;
-    captureLocation(box.querySelector('.stop-status[data-i="'+i+'"]'), box.querySelector('.stop-name[data-i="'+i+'"]'), function(c){ draft.stops[i].coord=c; recalcDistances(); });
-  }; });
-}
-document.getElementById('add-stop').onclick=function(){ draft.stops.push({name:"",coord:null}); renderStops(); };
-
-function buildTrip(){
-  var depName=document.getElementById('dep-name').value.trim();
-  var arrName=document.getElementById('arr-name').value.trim();
-  var date=document.getElementById('f-date').value||new Date().toISOString().slice(0,10);
-  var depKm=parseFloat(document.getElementById('dep-km').value);
-  var arrKm=parseFloat(document.getElementById('arr-km').value);
-  var odo=(!isNaN(depKm)&&!isNaN(arrKm)&&arrKm>=depKm)?(arrKm-depKm):null;
-  var pts=[draft.dep].concat(draft.stops.map(function(s){return s.coord;}), [draft.arr]).filter(Boolean);
-  var gps=0; for(var i=0;i<pts.length-1;i++) gps+=haversine(pts[i],pts[i+1]);
-  return {
-    date:date,
-    dep:{name:depName, coord:draft.dep},
-    arr:{name:arrName, coord:draft.arr},
-    stops: draft.stops.map(function(s){ return {name:s.name||"", coord:s.coord}; }),
-    depKm: isNaN(depKm)?null:depKm, arrKm: isNaN(arrKm)?null:arrKm,
-    odoKm: odo, gpsKm: pts.length>=2 ? Math.round(gps*10)/10 : null,
-    routeKm: draft.routeKm, routeGeom: draft.routeGeom,
-    note: document.getElementById('f-note').value.trim()
-  };
-}
-document.getElementById('save-trip').onclick=function(){
-  var depName=document.getElementById('dep-name').value.trim();
-  var arrName=document.getElementById('arr-name').value.trim();
-  if(!draft.dep && !depName){ alert("Renseignez au moins le lieu de départ (adresse, liste ou GPS)."); return; }
-  if(!draft.arr && !arrName){ alert("Renseignez au moins le lieu d'arrivée (adresse, liste ou GPS)."); return; }
-  var t=buildTrip();
-  if(editId!=null){
-    var idx=trips.findIndex(function(x){ return x.id==editId; });
-    if(idx>=0){ t.id=editId; trips[idx]=t; }
-    editId=null;
-  } else {
-    t.id=Date.now(); trips.push(t);
+  function computeCompensation(trip) {
+    var X = parseFloat(trip.duration) || 0;
+    var distance = parseFloat(trip.distance) || 0;
+    var isOffDay = trip.weekend || trip.holiday;
+    var duringContract = trip.duringContractHours;
+    if (duringContract && !isOffDay) {
+      return { eligible: false, roundedHours: 0, reason: "Trajet effectué pendant les horaires contractuels : comptabilisé comme temps de travail, sans compensation supplémentaire (art. 8)." };
+    }
+    var compHours = 0, reason = "";
+    if (isOffDay) {
+      compHours = X * 0.5;
+      reason = "Jour non travaillé : franchise de 2h supprimée, compensation dès la 1ère heure (cas particulier, art. 4).";
+    } else {
+      if (X > 2 || distance > 100) {
+        compHours = Math.max(0, (X - 2) * 0.5);
+        reason = "Trajet en semaine dépassant 2h ou 100 km : franchise de 2h déduite (art. 4).";
+      } else {
+        compHours = 0;
+        reason = "Sous le seuil de déclenchement (2h et 100 km) : pas de compensation.";
+      }
+    }
+    var roundedHours = Math.round(compHours * 2) / 2;
+    return { eligible: roundedHours > 0, roundedHours: roundedHours, reason: reason };
   }
-  persist(); resetForm(); refreshAll();
-  alert("Trajet enregistré.");
-};
 
-function startEdit(id){
-  var t=trips.find(function(x){ return x.id==id; });
-  if(!t) return;
-  editId=id;
-  draft.dep = t.dep.coord ? {lat:t.dep.coord.lat, lng:t.dep.coord.lng} : null;
-  draft.arr = t.arr.coord ? {lat:t.arr.coord.lat, lng:t.arr.coord.lng} : null;
-  draft.stops = t.stops.map(function(s){ return {name:s.name||"", coord: s.coord?{lat:s.coord.lat,lng:s.coord.lng}:null}; });
-  draft.routeGeom = t.routeGeom||null;
-  draft.routeKm = (t.routeKm!=null?t.routeKm:null);
-  document.getElementById('f-date').value=t.date;
-  document.getElementById('dep-name').value=t.dep.name||"";
-  document.getElementById('arr-name').value=t.arr.name||"";
-  document.getElementById('dep-km').value=(t.depKm!=null?t.depKm:"");
-  document.getElementById('arr-km').value=(t.arrKm!=null?t.arrKm:"");
-  document.getElementById('f-note').value=t.note||"";
-  var ds=document.getElementById('dep-status');
-  ds.className="loc-status"+(t.dep.coord?" set":""); ds.textContent=t.dep.coord?("Position : "+t.dep.coord.lat.toFixed(5)+", "+t.dep.coord.lng.toFixed(5)):"";
-  var as=document.getElementById('arr-status');
-  as.className="loc-status"+(t.arr.coord?" set":""); as.textContent=t.arr.coord?("Position : "+t.arr.coord.lat.toFixed(5)+", "+t.arr.coord.lng.toFixed(5)):"";
-  renderStops();
-  document.getElementById('dist-odo').value=(t.odoKm!=null?fmtKm(t.odoKm):"");
-  document.getElementById('dist-route').value=(t.routeKm!=null?fmtKm(t.routeKm):(t.gpsKm!=null?fmtKm(t.gpsKm)+" (à vol d'oiseau)":""));
-  document.getElementById('form-title').innerHTML='Modifier le trajet <span class="edit-tag">(en cours)</span>';
-  document.getElementById('save-trip').textContent="Mettre à jour le trajet";
-  document.getElementById('cancel-edit').style.display="block";
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-document.getElementById('cancel-edit').onclick=function(){ editId=null; resetForm(); };
+  function formatDate(dateStr) {
+    var d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+  }
 
-function resetForm(){
-  editId=null;
-  draft.dep=null; draft.arr=null; draft.stops=[]; draft.routeGeom=null; draft.routeKm=null;
-  ['dep-name','arr-name','dep-km','arr-km','f-note','dist-odo','dist-route'].forEach(function(id){ document.getElementById(id).value=""; });
-  document.getElementById('dep-status').textContent=""; document.getElementById('dep-status').className="loc-status";
-  document.getElementById('arr-status').textContent=""; document.getElementById('arr-status').className="loc-status";
-  document.getElementById('f-date').value=new Date().toISOString().slice(0,10);
-  document.getElementById('form-title').textContent="Nouveau trajet";
-  document.getElementById('save-trip').textContent="Enregistrer le trajet";
-  document.getElementById('cancel-edit').style.display="none";
-  renderStops();
-}
+  function computeTrip(t) {
+    if (t.multiDay && Array.isArray(t.legs)) {
+      var legs = t.legs.map(function (l) { var c = Object.assign({}, l); c.calc = computeCompensation(l); return c; });
+      var totalHours = legs.reduce(function (s, l) { return s + l.calc.roundedHours; }, 0);
+      return { multiDay: true, legs: legs, totalHours: totalHours, eligible: totalHours > 0 };
+    }
+    var calc = computeCompensation(t);
+    return { multiDay: false, calc: calc, totalHours: calc.roundedHours, eligible: calc.eligible };
+  }
 
-var map, layerGroup;
-function initMap(){
-  map=L.map('map',{zoomControl:true}).setView([46.6,2.3],5);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, crossOrigin:true, attribution:'(c) OpenStreetMap'}).addTo(map);
-  layerGroup=L.layerGroup().addTo(map);
-}
-var COLORS=['#f39321','#1a1a1a','#d97a10','#7c3aed','#0891b2','#be123c','#4d7c0f','#0d9488'];
-function dot(coord,color,label){ return L.circleMarker([coord.lat,coord.lng],{radius:7,color:'#fff',weight:2,fillColor:color,fillOpacity:1}).bindTooltip(label,{direction:'top'}); }
-function drawMap(list){
-  layerGroup.clearLayers();
-  var allPts=[];
-  list.forEach(function(t,idx){
-    var color=COLORS[idx%COLORS.length];
-    var pts=[t.dep.coord].concat(t.stops.map(function(s){return s.coord;}), [t.arr.coord]).filter(Boolean);
-    if(t.routeGeom && t.routeGeom.length>=2){ L.polyline(t.routeGeom,{color:color,weight:4,opacity:.85}).addTo(layerGroup); }
-    else if(pts.length>=2){ L.polyline(pts.map(function(p){return [p.lat,p.lng];}),{color:color,weight:3,opacity:.55,dashArray:'6,7'}).addTo(layerGroup); }
-    if(t.dep.coord){ dot(t.dep.coord,'#16a34a','Départ : '+(t.dep.name||'')).addTo(layerGroup); allPts.push([t.dep.coord.lat,t.dep.coord.lng]); }
-    t.stops.forEach(function(s,i){ if(s.coord){ dot(s.coord,'#d97706','Arrêt '+(i+1)+' : '+(s.name||'')).addTo(layerGroup); allPts.push([s.coord.lat,s.coord.lng]); } });
-    if(t.arr.coord){ dot(t.arr.coord,'#dc2626','Arrivée : '+(t.arr.name||'')).addTo(layerGroup); allPts.push([t.arr.coord.lat,t.arr.coord.lng]); }
-  });
-  if(allPts.length){ map.fitBounds(allPts,{padding:[40,40],maxZoom:14}); }
-  setTimeout(function(){ map.invalidateSize(); },150);
-}
+  function tripSortDate(t) { return (t.multiDay && t.legs && t.legs.length) ? t.legs[0].date : t.date; }
 
-function getFiltered(){
-  var y=document.getElementById('filter-year').value;
-  var m=document.getElementById('filter-month').value;
-  return trips.filter(function(t){
-    var p=t.date.split('-');
-    if(y!=="all" && p[0]!==y) return false;
-    if(m!=="all" && p[1]!==m) return false;
-    return true;
-  }).sort(function(a,b){ return a.date.localeCompare(b.date); });
-}
-function buildFilters(){
-  var ySel=document.getElementById('filter-year'), mSel=document.getElementById('filter-month');
-  var years=Array.from(new Set(trips.map(function(t){return t.date.slice(0,4);}))).sort().reverse();
-  var curY=ySel.value, curM=mSel.value;
-  ySel.innerHTML='<option value="all">Toutes</option>'+years.map(function(y){return '<option value="'+y+'">'+y+'</option>';}).join('');
-  mSel.innerHTML='<option value="all">Tous</option>'+MONTHS.map(function(m,i){return '<option value="'+pad(i+1)+'">'+m+'</option>';}).join('');
-  if(Array.prototype.some.call(ySel.options,function(o){return o.value===curY;})) ySel.value=curY;
-  if(Array.prototype.some.call(mSel.options,function(o){return o.value===curM;})) mSel.value=curM;
-}
-function renderStats(list){
-  var odo=list.reduce(function(s,t){return s+(t.odoKm||0);},0);
-  var rte=list.reduce(function(s,t){return s+((t.routeKm!=null?t.routeKm:t.gpsKm)||0);},0);
-  document.getElementById('stats').innerHTML='<div class="stat"><div class="v">'+list.length+'</div><div class="l">trajets</div></div>'
-    +'<div class="stat"><div class="v">'+fmtKm(odo)+'</div><div class="l">total compteur</div></div>'
-    +'<div class="stat"><div class="v">'+fmtKm(rte)+'</div><div class="l">total par la route</div></div>';
-}
-function renderTable(list){
-  var wrap=document.getElementById('table-wrap');
-  if(!list.length){ wrap.innerHTML='<div class="empty">Aucun trajet pour ce filtre.</div>'; return; }
-  var html='<table><thead><tr><th>Date</th><th>Trajet</th><th>Km</th><th></th></tr></thead><tbody>';
-  list.slice().reverse().forEach(function(t){
-    var route=[t.dep.name||'Départ'].concat(t.stops.map(function(s,i){return s.name||('Arrêt '+(i+1));}), [t.arr.name||'Arrivée']).join(' -> ');
-    var d=new Date(t.date+'T00:00:00');
-    var dateStr=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-    var kmRoute=(t.routeKm!=null?t.routeKm:t.gpsKm);
-    html+='<tr><td>'+dateStr+'</td><td><div class="t-route">'+esc(route)+'</div>'+(t.note?'<div class="t-sub">'+esc(t.note)+'</div>':'')+'</td>'
-      +'<td>'+(t.odoKm!=null?'<span class="km-badge">Compteur '+fmtKm(t.odoKm)+'</span><br>':'')+(kmRoute!=null?'<span class="km-badge">Route '+fmtKm(kmRoute)+'</span>':'')+'</td>'
-      +'<td><div class="actions"><button class="btn-edit btn-sm" data-edit="'+t.id+'">Modifier</button><button class="btn-danger btn-sm" data-del="'+t.id+'">Suppr.</button></div></td></tr>';
-  });
-  html+='</tbody></table>';
-  wrap.innerHTML=html;
-  wrap.querySelectorAll('[data-edit]').forEach(function(b){ b.onclick=function(){ startEdit(b.dataset.edit); }; });
-  wrap.querySelectorAll('[data-del]').forEach(function(b){ b.onclick=function(){
-    if(confirm("Supprimer ce trajet ?")){ trips=trips.filter(function(x){return x.id!=b.dataset.del;}); if(editId==b.dataset.del) resetForm(); persist(); refreshAll(); }
-  }; });
-}
-function refreshAll(){ buildFilters(); var list=getFiltered(); renderStats(list); renderTable(list); drawMap(list); }
-document.getElementById('filter-year').onchange=refreshAll;
-document.getElementById('filter-month').onchange=refreshAll;
+  function isoWeekInfo(dateStr) {
+    var d = new Date(dateStr + "T00:00:00");
+    var target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var dayNum = (target.getUTCDay() + 6) % 7;
+    var monday = new Date(target); monday.setUTCDate(target.getUTCDate() - dayNum);
+    var sunday = new Date(monday); sunday.setUTCDate(monday.getUTCDate() + 6);
+    var thursday = new Date(target); thursday.setUTCDate(target.getUTCDate() - dayNum + 3);
+    var firstThursday = new Date(Date.UTC(thursday.getUTCFullYear(), 0, 4));
+    var firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
+    firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
+    var week = 1 + Math.round((thursday - firstThursday) / (7 * 24 * 3600 * 1000));
+    var year = thursday.getUTCFullYear();
+    return { key: year + "-W" + String(week).padStart(2, "0"), week: week, year: year, monday: monday, sunday: sunday };
+  }
 
-function download(filename, content, type){
-  var blob=(content instanceof Blob)?content:new Blob([content],{type:type});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
-  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); },500);
-}
-function periodLabel(){
-  var y=document.getElementById('filter-year').value, m=document.getElementById('filter-month').value;
-  return (y==="all"?"toutes-annees":y)+"_"+(m==="all"?"tous-mois":MONTHS[parseInt(m,10)-1].toLowerCase());
-}
-document.getElementById('dl-csv').onclick=function(){
-  var list=getFiltered();
-  if(!list.length){ alert("Aucun trajet à exporter."); return; }
-  var head=["Date","Départ","Arrêts","Arrivée","Km compteur départ","Km compteur arrivée","Distance compteur (km)","Distance routière (km)","Distance vol d'oiseau (km)","Note"];
-  var rows=list.map(function(t){ return [t.date, t.dep.name||"", t.stops.map(function(s){return s.name||"";}).filter(Boolean).join(" | "), t.arr.name||"", (t.depKm!=null?t.depKm:""), (t.arrKm!=null?t.arrKm:""), (t.odoKm!=null?t.odoKm:""), (t.routeKm!=null?t.routeKm:""), (t.gpsKm!=null?t.gpsKm:""), (t.note||"").replace(/\r?\n/g," ")]; });
-  var escc=function(v){ v=String(v); return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
-  var csv="﻿"+[head].concat(rows).map(function(r){ return r.map(escc).join(";"); }).join("\r\n");
-  download("trajets_"+periodLabel()+".csv", csv, "text/csv;charset=utf-8");
-};
-document.getElementById('dl-json').onclick=function(){ download("sauvegarde_trajets_"+new Date().toISOString().slice(0,10)+".json", JSON.stringify(trips,null,2), "application/json"); };
-document.getElementById('up-json').onclick=function(){ document.getElementById('json-file').click(); };
-document.getElementById('json-file').onchange=function(e){
-  var file=e.target.files[0]; if(!file) return;
-  var r=new FileReader();
-  r.onload=function(){
-    try{
-      var data=JSON.parse(r.result);
-      if(!Array.isArray(data)) throw new Error("format");
-      if(confirm("Remplacer les données actuelles par cette sauvegarde ("+data.length+" trajets) ?")){ trips=data; persist(); refreshAll(); alert("Sauvegarde restaurée."); }
-    }catch(err){ alert("Fichier invalide."); }
-    e.target.value="";
-  };
-  r.readAsText(file);
-};
-document.getElementById('dl-map').onclick=function(){
-  var list=getFiltered();
-  if(!list.length){ alert("Aucun trajet a afficher sur la carte pour ce filtre."); return; }
-  var btn=this, old=btn.textContent; btn.textContent="Generation...";
-  // Recadrer la carte sur les trajets (points + itineraires)
-  var all=[];
-  list.forEach(function(t){
-    if(t.dep.coord) all.push([t.dep.coord.lat,t.dep.coord.lng]);
-    t.stops.forEach(function(s){ if(s.coord) all.push([s.coord.lat,s.coord.lng]); });
-    if(t.arr.coord) all.push([t.arr.coord.lat,t.arr.coord.lng]);
-    if(t.routeGeom) t.routeGeom.forEach(function(ll){ all.push(ll); });
-  });
-  if(all.length) map.fitBounds(all,{padding:[30,30],maxZoom:14});
-  map.invalidateSize();
-  setTimeout(function(){
-    try{
-      var mapEl=document.getElementById('map');
-      var W=mapEl.clientWidth, H=mapEl.clientHeight, scale=2;
-      var canvas=document.createElement('canvas'); canvas.width=W*scale; canvas.height=H*scale;
-      var ctx=canvas.getContext('2d'); ctx.scale(scale,scale);
-      ctx.fillStyle='#eef1f4'; ctx.fillRect(0,0,W,H);
-      var mr=mapEl.getBoundingClientRect();
-      // Dessiner les tuiles a leur position reelle a l'ecran
-      var tiles=mapEl.querySelectorAll('img.leaflet-tile');
-      tiles.forEach(function(img){
-        if(!img.complete || !img.naturalWidth) return;
-        var r=img.getBoundingClientRect();
-        try{ ctx.drawImage(img, r.left-mr.left, r.top-mr.top, r.width, r.height); }catch(e){}
+  function fmtShort(d) { return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }); }
+  function fmtHours(h) { return (Math.round(h * 100) / 100).toString().replace(".", ",") + " h"; }
+  function fmtTime(t) { return t ? t.replace(":", "h") : ""; }
+
+  function dayWorkedHours(o) {
+    if (o.start && o.end) {
+      var sp = o.start.split(":"), ep = o.end.split(":");
+      var mins = (Number(ep[0]) * 60 + Number(ep[1])) - (Number(sp[0]) * 60 + Number(sp[1]));
+      if (mins < 0) mins += 24 * 60;
+      var pause = parseFloat(o.pause) || 0;
+      return Math.max(0, (mins - pause) / 60);
+    }
+    return null;
+  }
+
+  function dayOvertime(o, base) {
+    var worked = dayWorkedHours(o);
+    if (worked === null) return Math.max(0, parseFloat(o.hours) || 0);
+    return Math.max(0, worked - base);
+  }
+
+  function legLine(l, prefix) {
+    var parts = [];
+    parts.push(l.duration + " h");
+    if (l.distance) parts.push("📍 " + l.distance + " km");
+    if (l.weekend || l.holiday) parts.push("☀️ jour non travaillé");
+    if (l.duringContractHours) parts.push("horaires contractuels");
+    var res = l.calc.roundedHours > 0 ? "→ + " + l.calc.roundedHours + " h" : "→ pas de compensation";
+    return '<div class="trip-reason" style="margin-top:5px;"><strong style="color:#5C5648;">' + prefix + ' ' + formatDate(l.date) + '</strong> · ' + parts.join(" · ") + ' <span style="color:#26433A;">' + res + '</span></div>';
+  }
+
+  function renderTrips() {
+    var list = document.getElementById("trip-list");
+    var enriched = trips.map(function (t) { var c = Object.assign({}, t); c.comp = computeTrip(t); return c; })
+                        .sort(function (a, b) { return tripSortDate(a).localeCompare(tripSortDate(b)); });
+    if (enriched.length === 0) {
+      list.innerHTML = '<p class="empty">Aucun trajet enregistré pour le moment. Ajoute ta première mission ci-dessus.</p>';
+    } else {
+      list.innerHTML = enriched.map(function (t) {
+        var eligible = t.comp.eligible;
+        var resultHtml;
+        if (eligible) {
+          var extra = "";
+          if (t.mode === "prime" && parseFloat(hourlyRate) > 0) { extra = " (" + (t.comp.totalHours * parseFloat(hourlyRate)).toFixed(2) + " €)"; }
+          resultHtml = "<strong>+ " + t.comp.totalHours + " h " + (t.mode === "repos" ? "de repos compensateur" : "au taux horaire") + extra + "</strong>";
+        } else { resultHtml = "Pas de compensation"; }
+        var titleDate, metaHtml, reasonHtml;
+        if (t.comp.multiDay) {
+          var l0 = t.comp.legs[0], l1 = t.comp.legs[1];
+          titleDate = formatDate(l0.date) + " → " + (l1 ? formatDate(l1.date) : "");
+          metaHtml = "🔁 Déplacement sur plusieurs jours · calcul par jour (art. 4)";
+          reasonHtml = t.comp.legs.map(function (l, i) { return legLine(l, i === 0 ? "Aller —" : "Retour —"); }).join("");
+        } else {
+          titleDate = formatDate(t.date);
+          var metaBits = [];
+          metaBits.push(t.duration + " h A/R");
+          if (t.distance) metaBits.push("📍 " + t.distance + " km");
+          if (t.weekend || t.holiday) metaBits.push("☀️ jour non travaillé");
+          if (t.duringContractHours) metaBits.push("horaires contractuels");
+          metaHtml = metaBits.join(" · ");
+          reasonHtml = '<div class="trip-reason">' + t.comp.calc.reason + '</div>';
+        }
+        return '<div class="trip"><div class="dot-col"><div class="dot ' + (eligible ? "eligible" : "") + '"></div></div><div class="trip-body"><div class="trip-top"><span class="trip-title">' + titleDate + (t.label ? " — " + escapeHtml(t.label) : "") + '</span><button class="del-btn" data-id="' + t.id + '" title="Supprimer">🗑</button></div><div class="trip-meta">' + metaHtml + '</div><div class="trip-result ' + (eligible ? "eligible" : "") + '">' + resultHtml + '</div>' + reasonHtml + '</div></div>';
+      }).join("");
+      list.querySelectorAll(".del-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () { trips = trips.filter(function (t) { return t.id !== btn.dataset.id; }); saveData(); renderTrips(); });
       });
-      function pt(lat,lng){ return map.latLngToContainerPoint(L.latLng(lat,lng)); }
-      function marker(lat,lng,fill){ var p=pt(lat,lng); ctx.beginPath(); ctx.arc(p.x,p.y,6,0,2*Math.PI); ctx.fillStyle=fill; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='#fff'; ctx.stroke(); }
-      list.forEach(function(t,idx){
-        var color=COLORS[idx%COLORS.length];
-        var line=[];
-        if(t.routeGeom && t.routeGeom.length>=2){ line=t.routeGeom; ctx.setLineDash([]); }
-        else { if(t.dep.coord)line.push([t.dep.coord.lat,t.dep.coord.lng]); t.stops.forEach(function(s){if(s.coord)line.push([s.coord.lat,s.coord.lng]);}); if(t.arr.coord)line.push([t.arr.coord.lat,t.arr.coord.lng]); ctx.setLineDash([6,7]); }
-        if(line.length>=2){ ctx.strokeStyle=color; ctx.lineWidth=4; ctx.lineJoin='round'; ctx.beginPath(); line.forEach(function(ll,i){ var p=pt(ll[0],ll[1]); if(i===0)ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); }); ctx.stroke(); }
-        ctx.setLineDash([]);
-        if(t.dep.coord) marker(t.dep.coord.lat,t.dep.coord.lng,'#16a34a');
-        t.stops.forEach(function(s){ if(s.coord) marker(s.coord.lat,s.coord.lng,'#d97706'); });
-        if(t.arr.coord) marker(t.arr.coord.lat,t.arr.coord.lng,'#dc2626');
-      });
-      canvas.toBlob(function(b){ btn.textContent=old; if(b) download("carte_trajets_"+periodLabel()+".png", b, "image/png"); else alert("Echec de la capture (tuiles protegees ?)."); });
-    }catch(e){ btn.textContent=old; alert("La capture a echoue. Reessayez, ou faites une capture d'ecran."); }
-  }, 900);
-};
+    }
+    var totalRepos = enriched.filter(function (t) { return t.mode === "repos"; }).reduce(function (s, t) { return s + t.comp.totalHours; }, 0);
+    var totalPrimeHours = enriched.filter(function (t) { return t.mode === "prime"; }).reduce(function (s, t) { return s + t.comp.totalHours; }, 0);
+    document.getElementById("sum-repos").textContent = totalRepos + " h";
+    document.getElementById("sum-prime").textContent = totalPrimeHours + " h";
+    var rate = parseFloat(hourlyRate) || 0;
+    var eurEl = document.getElementById("sum-eur");
+    if (rate > 0) { eurEl.style.display = "block"; eurEl.textContent = "≈ " + (totalPrimeHours * rate).toFixed(2) + " €"; }
+    else { eurEl.style.display = "none"; }
+  }
 
-var installBtn=document.getElementById('install-btn'); var deferredPrompt=null;
-window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.style.display='inline-block'; });
-if(installBtn){ installBtn.onclick=function(){ if(!deferredPrompt) return; deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(){ deferredPrompt=null; installBtn.style.display='none'; }); }; }
-window.addEventListener('appinstalled', function(){ if(installBtn) installBtn.style.display='none'; });
-(function(){ var isiOS=/iphone|ipad|ipod/i.test(navigator.userAgent); var standalone=window.navigator.standalone||window.matchMedia('(display-mode: standalone)').matches; var tip=document.getElementById('ios-tip'); if(isiOS && !standalone && tip){ tip.style.display='block'; } })();
-if('serviceWorker' in navigator){ window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
-initMap(); resetForm(); refreshAll();
+  function renderOvertime() {
+    var list = document.getElementById("hs-list");
+    var base = parseFloat(dayLength) > 0 ? parseFloat(dayLength) : 7;
+    if (overtime.length === 0) {
+      list.innerHTML = '<p class="empty">Aucune journée enregistrée. Ajoute ta première journée de travail ci-dessus.</p>';
+      document.getElementById("sum-hs").textContent = "0 h";
+      document.getElementById("sum-hs-days").textContent = "0 j";
+      document.getElementById("sum-hs-days-note").textContent = "";
+      return;
+    }
+    var groups = {};
+    overtime.forEach(function (o) {
+      var info = isoWeekInfo(o.date);
+      if (!groups[info.key]) groups[info.key] = { info: info, entries: [], total: 0 };
+      var hs = dayOvertime(o, base);
+      var e = Object.assign({}, o); e.hs = hs;
+      groups[info.key].entries.push(e);
+      groups[info.key].total += hs;
+    });
+    var orderedKeys = Object.keys(groups).sort().reverse();
+    list.innerHTML = orderedKeys.map(function (key) {
+      var g = groups[key];
+      g.entries.sort(function (a, b) { return a.date.localeCompare(b.date); });
+      var days = g.total / base;
+      var daysRounded = Math.round(days * 2) / 2;
+      var rows = g.entries.map(function (o) {
+        var worked = dayWorkedHours(o);
+        var sub;
+        if (worked !== null) {
+          var pause = parseFloat(o.pause) || 0;
+          sub = fmtTime(o.start) + "–" + fmtTime(o.end) + (pause ? " (−" + pause + " min)" : "") + " → " + fmtHours(worked) + " travaillées";
+        } else { sub = "heures supp. saisies directement"; }
+        return '<div class="ot-row"><div><div class="ot-info">' + formatDate(o.date) + (o.label ? " — " + escapeHtml(o.label) : "") + ' <button class="del-btn" data-id="' + o.id + '" title="Supprimer" style="font-size:14px;">🗑</button></div><div class="ot-sub">' + sub + '</div></div><div class="ot-hours ' + (o.hs > 0 ? "" : "zero") + '">' + (o.hs > 0 ? "+ " + fmtHours(o.hs) : "0 h supp") + '</div></div>';
+      }).join("");
+      return '<div class="week-group"><div class="week-head"><div><div class="week-title">Semaine ' + g.info.week + ' · ' + g.info.year + '</div><div class="trip-meta">' + fmtShort(g.info.monday) + ' → ' + fmtShort(g.info.sunday) + '</div></div><div style="text-align:right;"><div class="week-total">' + fmtHours(g.total) + ' supp</div><div class="week-days">≈ ' + daysRounded.toString().replace(".", ",") + ' j de récup</div></div></div>' + rows + '</div>';
+    }).join("");
+    list.querySelectorAll(".del-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () { overtime = overtime.filter(function (o) { return o.id !== btn.dataset.id; }); saveData(); renderOvertime(); });
+    });
+    var total = overtime.reduce(function (s, o) { return s + dayOvertime(o, base); }, 0);
+    var totalDays = total / base;
+    var totalDaysRounded = Math.round(totalDays * 2) / 2;
+    document.getElementById("sum-hs").textContent = fmtHours(total);
+    document.getElementById("sum-hs-days").textContent = totalDaysRounded.toString().replace(".", ",") + " j";
+    document.getElementById("sum-hs-days-note").textContent = "base " + base.toString().replace(".", ",") + " h/jour · valeur exacte " + (Math.round(totalDays * 100) / 100).toString().replace(".", ",") + " j";
+  }
+
+  function render() { renderTrips(); renderOvertime(); }
+
+  function escapeHtml(str) { var div = document.createElement("div"); div.textContent = str; return div.innerHTML; }
+
+  function updateDetect() {
+    var dateVal = document.getElementById("f-date").value;
+    var el = document.getElementById("f-detect");
+    if (!dateVal) { el.textContent = "📅 Sélectionne une date"; return; }
+    el.textContent = isWeekendDate(dateVal) ? "📅 Samedi ou dimanche (détecté)" : "📅 Jour de semaine (détecté)";
+  }
+  function updateDetectHS() {
+    var dateVal = document.getElementById("h-date").value;
+    var el = document.getElementById("h-detect");
+    if (!dateVal) { el.textContent = "📅 Sélectionne une date"; return; }
+    var info = isoWeekInfo(dateVal);
+    el.textContent = "📅 Semaine " + info.week + " (" + fmtShort(info.monday) + " → " + fmtShort(info.sunday) + ")";
+  }
+  function updateDetectR() {
+    var dateVal = document.getElementById("r-date").value;
+    var el = document.getElementById("r-detect");
+    if (!dateVal) { el.textContent = "📅 Sélectionne une date"; return; }
+    el.textContent = isWeekendDate(dateVal) ? "📅 Samedi ou dimanche (détecté)" : "📅 Jour de semaine (détecté)";
+  }
+
+  function setTab(tab) {
+    var isTrajets = tab === "trajets";
+    document.getElementById("tab-trajets").classList.toggle("active", isTrajets);
+    document.getElementById("tab-hs").classList.toggle("active", !isTrajets);
+    document.getElementById("module-trajets").classList.toggle("active", isTrajets);
+    document.getElementById("module-hs").classList.toggle("active", !isTrajets);
+    document.getElementById("side-trajets").style.display = isTrajets ? "block" : "none";
+    document.getElementById("side-rate").style.display = isTrajets ? "block" : "none";
+    document.getElementById("rules-trajets").style.display = isTrajets ? "block" : "none";
+    document.getElementById("side-hs").style.display = isTrajets ? "none" : "block";
+    document.getElementById("side-daylen").style.display = isTrajets ? "none" : "block";
+    document.getElementById("rules-hs").style.display = isTrajets ? "none" : "block";
+  }
+
+  function addTrip() {
+    var dateVal = document.getElementById("f-date").value;
+    var durationVal = document.getElementById("f-duration").value;
+    var distanceVal = document.getElementById("f-distance").value;
+    var labelVal = document.getElementById("f-label").value;
+    var holidayVal = document.getElementById("f-holiday").checked;
+    var contractVal = document.getElementById("f-contract").checked;
+    var multiDay = document.getElementById("f-multiday").checked;
+    var errorEl = document.getElementById("f-error");
+    errorEl.style.display = "none";
+    if (!dateVal) { errorEl.textContent = multiDay ? "⚠ Indique la date de l'aller." : "⚠ Indique une date de trajet."; errorEl.style.display = "flex"; return; }
+    if (!durationVal || parseFloat(durationVal) <= 0) { errorEl.textContent = multiDay ? "⚠ Indique une durée d'aller valide (en heures)." : "⚠ Indique une durée totale aller-retour valide (en heures)."; errorEl.style.display = "flex"; return; }
+    if (multiDay) {
+      var rDate = document.getElementById("r-date").value;
+      var rDuration = document.getElementById("r-duration").value;
+      var rDistance = document.getElementById("r-distance").value;
+      var rHoliday = document.getElementById("r-holiday").checked;
+      var rContract = document.getElementById("r-contract").checked;
+      if (!rDate) { errorEl.textContent = "⚠ Indique la date du retour."; errorEl.style.display = "flex"; return; }
+      if (!rDuration || parseFloat(rDuration) <= 0) { errorEl.textContent = "⚠ Indique une durée de retour valide (en heures)."; errorEl.style.display = "flex"; return; }
+      trips.push({ id: uid(), multiDay: true, label: labelVal, mode: mode, legs: [
+        { date: dateVal, duration: durationVal, distance: distanceVal, weekend: isWeekendDate(dateVal), holiday: holidayVal, duringContractHours: contractVal },
+        { date: rDate, duration: rDuration, distance: rDistance, weekend: isWeekendDate(rDate), holiday: rHoliday, duringContractHours: rContract }
+      ] });
+    } else {
+      trips.push({ id: uid(), date: dateVal, duration: durationVal, distance: distanceVal, weekend: isWeekendDate(dateVal), holiday: holidayVal, duringContractHours: contractVal, label: labelVal, mode: mode });
+    }
+    saveData();
+    renderTrips();
+    document.getElementById("f-date").value = "";
+    document.getElementById("f-duration").value = "";
+    document.getElementById("f-distance").value = "";
+    document.getElementById("f-label").value = "";
+    document.getElementById("f-holiday").checked = false;
+    document.getElementById("f-contract").checked = false;
+    document.getElementById("f-multiday").checked = false;
+    document.getElementById("retour-block").style.display = "none";
+    document.getElementById("lbl-date").textContent = "Date du trajet";
+    document.getElementById("lbl-duration").textContent = "Durée totale A/R (heures)";
+    document.getElementById("lbl-distance").textContent = "Distance A/R (km)";
+    document.getElementById("r-date").value = "";
+    document.getElementById("r-duration").value = "";
+    document.getElementById("r-distance").value = "";
+    document.getElementById("r-holiday").checked = false;
+    document.getElementById("r-contract").checked = false;
+    updateDetect(); updateDetectR();
+  }
+
+  function addWorkDay() {
+    var dateVal = document.getElementById("h-date").value;
+    var startVal = document.getElementById("h-start").value;
+    var endVal = document.getElementById("h-end").value;
+    var pauseVal = document.getElementById("h-pause").value;
+    var labelVal = document.getElementById("h-label").value;
+    var errorEl = document.getElementById("h-error");
+    errorEl.style.display = "none";
+    if (!dateVal) { errorEl.textContent = "⚠ Indique une date."; errorEl.style.display = "flex"; return; }
+    if (!startVal || !endVal) { errorEl.textContent = "⚠ Indique l'heure de début et l'heure de fin."; errorEl.style.display = "flex"; return; }
+    var testWorked = dayWorkedHours({ start: startVal, end: endVal, pause: pauseVal });
+    if (testWorked !== null && testWorked <= 0) { errorEl.textContent = "⚠ La durée de travail obtenue est nulle : vérifie début, fin et pause."; errorEl.style.display = "flex"; return; }
+    overtime.push({ id: uid(), date: dateVal, start: startVal, end: endVal, pause: pauseVal || "0", label: labelVal });
+    saveData();
+    renderOvertime();
+    document.getElementById("h-date").value = "";
+    document.getElementById("h-start").value = "";
+    document.getElementById("h-end").value = "";
+    document.getElementById("h-pause").value = "";
+    document.getElementById("h-label").value = "";
+    updateDetectHS();
+  }
+
+  document.getElementById("f-date").addEventListener("change", updateDetect);
+  document.getElementById("h-date").addEventListener("change", updateDetectHS);
+  document.getElementById("r-date").addEventListener("change", updateDetectR);
+  document.getElementById("f-multiday").addEventListener("change", function (e) {
+    var on = e.target.checked;
+    document.getElementById("retour-block").style.display = on ? "block" : "none";
+    document.getElementById("lbl-date").textContent = on ? "Date de l'aller" : "Date du trajet";
+    document.getElementById("lbl-duration").textContent = on ? "Durée aller (heures)" : "Durée totale A/R (heures)";
+    document.getElementById("lbl-distance").textContent = on ? "Distance aller (km)" : "Distance A/R (km)";
+  });
+  document.getElementById("tab-trajets").addEventListener("click", function () { setTab("trajets"); });
+  document.getElementById("tab-hs").addEventListener("click", function () { setTab("hs"); });
+  document.getElementById("mode-repos").addEventListener("click", function () { mode = "repos"; document.getElementById("mode-repos").classList.add("active"); document.getElementById("mode-prime").classList.remove("active"); });
+  document.getElementById("mode-prime").addEventListener("click", function () { mode = "prime"; document.getElementById("mode-prime").classList.add("active"); document.getElementById("mode-repos").classList.remove("active"); });
+  document.getElementById("f-rate").addEventListener("input", function (e) { hourlyRate = e.target.value; saveData(); renderTrips(); });
+  document.getElementById("f-daylen").addEventListener("input", function (e) { dayLength = e.target.value; saveData(); renderOvertime(); });
+  document.getElementById("btn-add").addEventListener("click", addTrip);
+  document.getElementById("btn-add-hs").addEventListener("click", addWorkDay);
+
+  loadData();
+  document.getElementById("f-rate").value = hourlyRate;
+  document.getElementById("f-daylen").value = dayLength;
+  setTab("trajets");
+  render();
 </script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+</script>
+
 </body>
 </html>
